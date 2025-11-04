@@ -1,6 +1,6 @@
 import streamlit as st
 
-# ====== MOCK ACCESS / LANDING ======
+# ====== BASIC STATE ======
 if "onboarded" not in st.session_state:
     st.session_state.onboarded = False
 if "is_premium" not in st.session_state:
@@ -10,6 +10,7 @@ if "is_premium" not in st.session_state:
 def show_landing():
     st.markdown("""
 <style>
+body { background-color: #f9fafb; }
 .hero-wrap {
     max-width: 960px;
     margin: 0 auto;
@@ -42,43 +43,22 @@ def show_landing():
     border-radius:9999px;
     font-size:.7rem;
 }
-.feature-grid {
-    margin-top: 2.5rem;
-    display: grid;
-    gap: 1rem;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+.card {
+    background: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+    padding: 1.25rem;
+    height: 100%;
 }
-.feat-card {
-    background: rgba(255,255,255,0.65);
-    border: 1px solid rgba(0,0,0,0.05);
-    border-radius: 1.1rem;
-    padding: 1.2rem;
-    text-align: left;
-    box-shadow: 0 10px 30px rgba(15,23,42,0.04);
-}
-.feat-title {
-    font-weight: 600;
-    margin-bottom: .25rem;
-}
-.feat-button {
-    display: block;
-    margin-top: .8rem;
-    text-align: center;
-    padding: .6rem 1rem;
-    border-radius: .75rem;
-    font-weight: 600;
-    text-decoration: none;
-    cursor: pointer;
-}
-.btn-primary {
-    background: linear-gradient(135deg, #4F46E5 0%, #6366F1 100%);
-    color: white;
-    border: none;
-}
-.btn-secondary {
-    background: white;
-    border: 1px solid rgba(15,23,42,0.08);
+.card h3 {
+    margin-top: 0;
+    font-size: 1.1rem;
     color: #111827;
+}
+.card p {
+    color: #374151;
+    font-size: .95rem;
+    line-height: 1.5;
 }
 .footer-mini {
     margin-top: 2.5rem;
@@ -102,43 +82,38 @@ def show_landing():
     <div class="hero-badge">✓ Uses standard 35 + 5 × Z</div>
     <div class="hero-badge">✓ Built for JAC students</div>
   </div>
-
-  <div class="feature-grid">
-    <div class="feat-card">
-      <div class="feat-title">Free Tools</div>
-      <div>• Manual course entry<br>• R-score calculation<br>• Settings for min / max</div>
-    </div>
-
-    <div class="feat-card">
-      <div class="feat-title">Pro (Mock)</div>
-      <div>• OCR import from screenshots<br>• Autofill credits<br>• Program comparisons</div>
-    </div>
-
-    <div class="feat-card">
-      <div class="feat-title">Why trust it?</div>
-      <div>Runs fully in your browser — no Omnivox credentials, formula transparent.</div>
-    </div>
-  </div>
-
-  <div class="footer-mini">
-    RScore Pro © 2025 • Not affiliated with John Abbott College or Omnivox.
-  </div>
 </div>
 """, unsafe_allow_html=True)
 
-    # Embed buttons under their corresponding cards
-    col1, col2 = st.columns(2)
-    with col1:
+    # Real Streamlit layout and buttons
+    col_free, col_pro, col_trust = st.columns(3)
+
+    with col_free:
+        st.markdown('<div class="card"><h3>Free Tools</h3><p>• Manual course entry<br>• R-score calculation<br>• Settings for min / max</p></div>', unsafe_allow_html=True)
         if st.button("➡️ Continue with free tools"):
             st.session_state.onboarded = True
+            st.session_state.is_premium = False
             st.rerun()
-    with col2:
+
+    with col_pro:
+        st.markdown('<div class="card"><h3>Pro (mock)</h3><p>• OCR import from screenshots<br>• Autofill credits<br>• Program comparisons</p></div>', unsafe_allow_html=True)
         if st.button("🚀 Unlock Pro (mock)"):
-            st.session_state.is_premium = True
             st.session_state.onboarded = True
+            st.session_state.is_premium = True
             st.rerun()
 
+    with col_trust:
+        st.markdown('<div class="card"><h3>Why trust it?</h3><p>Runs entirely in your browser.<br>No Omnivox credentials required.<br>Formula shown transparently.</p></div>', unsafe_allow_html=True)
 
+    st.markdown('<div class="footer-mini">RScore Pro © 2025 • Not affiliated with John Abbott College or Omnivox.</div>', unsafe_allow_html=True)
+
+
+# ====== GATE ======
 if not st.session_state.onboarded:
     show_landing()
     st.stop()
+
+# ====== MAIN APP ======
+st.title("R-Score Dashboard")
+st.write(f"Welcome to {'RScore Pro' if st.session_state.is_premium else 'RScore Free'} mode!")
+# continue with your main tabs / calculator here...
