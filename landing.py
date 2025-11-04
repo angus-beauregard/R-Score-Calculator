@@ -113,17 +113,17 @@ def show_landing():
 
     <div class="features">
             <a href="/Main" target="_self" class="feat-card">
-                <div class="feat-title">Free Tools</div>
+    <div class="feat-title">Free Tools</div>
                 <p>Manual entry<br>R-score calculation<br>Min/max settings</p>
             </a>
 
             <a href="/Main" target="_self" class="feat-card pro-card">
-                <div class="feat-title">Pro (Mock)</div>
+    <div class="feat-title">Pro (Mock)</div>
                 <p>OCR import<br>Autofill credits<br>Program comparisons</p>
             </a>
 
             <div class="feat-card" style="cursor:default;">
-                <div class="feat-title">Why trust it?</div>
+    <div class="feat-title">Why trust it?</div>
                 <p>Runs fully in your browser<br>No Omnivox credentials<br>Formula shown</p>
             </div>
         </div>
