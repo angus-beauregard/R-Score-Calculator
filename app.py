@@ -1390,7 +1390,6 @@ explain_tab, manual_tab, csv_tab, import_tab, tab3, tab4, tab5, tab6, settings_t
     "Importance",
     "Biggest gains",
     "Programs",
-    "Save & History",
     "Settings"
 ])
 # ---------- EXPLANATION TAB ----------
