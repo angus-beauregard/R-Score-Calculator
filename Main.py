@@ -1471,6 +1471,9 @@ with explain_tab:
     )
 
 # ---------- MANUAL TAB ----------
+if "manual_editor_version" not in st.session_state:
+    st.session_state.manual_editor_version = 0
+
 with manual_tab:
     st.write("Enter or edit your courses below. Click 'Confirm Changes' when done.")
 
@@ -1488,23 +1491,14 @@ with manual_tab:
         num_rows="dynamic",
         use_container_width=True,
         hide_index=True,
-        key="manual_editor",
+        # 👇 dynamic key: editor_0, editor_1, editor_2...
+        key=f"manual_editor_{st.session_state.manual_editor_version}",
         column_config={
             "Course Name": st.column_config.TextColumn("Course Name"),
-            "Your Grade": st.column_config.NumberColumn(
-                "Your Grade", min_value=0.0, max_value=100.0, step=0.01, format="%.2f"
-            ),
-            "Class Avg": st.column_config.NumberColumn(
-                "Class Avg", min_value=0.0, max_value=100.0, step=0.01, format="%.2f"
-            ),
-            "Std. Dev": st.column_config.NumberColumn(
-                "Std. Dev", min_value=0.0, max_value=50.0, step=0.01, format="%.2f"
-            ),
-            "Credits": st.column_config.NumberColumn(
-                "Credits", min_value=0.0, max_value=10.0, step=0.01, format="%.2f"
-            ),
-        },
-    )
+            "Your Grade": st.column_config.NumberColumn("Your Grade", min_value=0.0, max_value=100.0, step=0.01, format="%.2f"),
+            "Class Avg": st.column_config.NumberColumn("Class Avg", min_value=0.0, max_value=100.0, step=0.01, format="%.2f"),
+            "Std. Dev": st.column_config.NumberColumn("Std. Dev", min_value=0.0, max_value=50.0, step=0.01, format="%.2f"),
+            "Credits": st.column_config.NumberColumn("Credits", min_value=0.0, max_value=10.0, step=0.01, format="%.2f"),
 
     if st.button("✅ Confirm Changes"):
         # save to session
