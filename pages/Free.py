@@ -1,39 +1,19 @@
+# pages/Free.py
 import streamlit as st
 import pandas as pd
 import numpy as np
 
 st.set_page_config(page_title="RScore – Free", layout="wide")
 
-# simple helper for locked tabs
-def locked_tab():
+def show_locked_tab():
     st.markdown("### 🔒 Premium feature")
-    st.write("This section is part of the Pro version.")
-    # upgrade button
-    if st.button("✨ Upgrade to Premium"):
-        # FUTURE: send user to Stripe checkout; on success, set these:
-        st.session_state.is_premium = True
-        # you can also set a flag to tell the main app to open directly
-        st.session_state.onboarded = True
-        # then send them to the main/pro page
-        st.switch_page("app.py")  # adjust to your actual main file name
+    st.write("This section is part of the Pro version. Upgrade on the landing page to unlock it.")
 
 st.markdown(
     '<h2 style="margin-bottom:0.2rem;">R-Score Dashboard (Free)</h2>'
     '<p style="color:#6b7280;margin-top:0;">Manual entry, basic R-score calculation, and settings.</p>',
     unsafe_allow_html=True
 )
-
-# ===== UPGRADE BAR AT THE TOP =====
-with st.container():
-    col1, col2 = st.columns([3, 1])
-    with col1:
-        st.info("You’re on the free version. CSV, OCR, importance, and programs are premium.")
-    with col2:
-        if st.button("✨ Upgrade to Premium", use_container_width=True):
-            # FUTURE: redirect to Stripe
-            st.session_state.is_premium = True
-            st.session_state.onboarded = True
-            st.switch_page("app.py")  # adjust to your main app filename
 
 tabs = st.tabs([
     "Help / Explanation",
@@ -68,7 +48,7 @@ with tab_help:
     st.write(
         "- Add courses in **Manual**\n"
         "- See your R-score in **Results**\n"
-        "- Premium tabs show you what you’d unlock."
+        "- CSV / OCR / analysis tabs are locked here so users see what Pro adds."
     )
 
 # 2) MANUAL (free)
@@ -89,13 +69,13 @@ with tab_manual:
         st.session_state.df = edited
         st.success("Saved.")
 
-# 3) CSV (locked)
+# 3) CSV (locked, but no st.stop)
 with tab_csv:
-    locked_tab()
+    show_locked_tab()
 
 # 4) IMPORT (locked)
 with tab_import:
-    locked_tab()
+    show_locked_tab()
 
 # 5) RESULTS (free)
 with tab_results:
@@ -103,6 +83,7 @@ with tab_results:
     if df.empty:
         st.warning("No data yet. Add courses in the **Manual** tab.")
     else:
+        # numeric cleanup
         for c in ["Your Grade", "Class Avg", "Std. Dev", "Credits"]:
             df[c] = pd.to_numeric(df[c], errors="coerce")
         df["Credits"] = df["Credits"].fillna(1)
@@ -138,6 +119,6 @@ with tab_gains:
 with tab_programs:
     show_locked_tab()
 
-# 9) SETTINGS (locker)
+# 9) SETTINGS (free)
 with tab_settings:
     show_locked_tab()
