@@ -222,9 +222,4 @@ with tab_programs:
 
 # -------- Settings tab (free) --------
 with tab_settings:
-    st.subheader("R-range settings (free)")
-    st.write("These are just shown for now in free — Pro can use them in more places.")
-    # no streamlit button here either; just inputs
-    rmin = st.number_input("R offset (min)", value=-2.0, step=0.5, key="free_r_offset_min")
-    rmax = st.number_input("R offset (max)", value=2.0, step=0.5, key="free_r_offset_max")
-    st.caption(f"Current range example: R(min) = R - {abs(rmin):.1f}, R(max) = R + {abs(rmax):.1f}")
+    locked_tab()
