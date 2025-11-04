@@ -99,19 +99,19 @@ def show_landing():
             </div>
         </div>
 
-        <div class="hero-title">Your R-Score, cleaned up.</div>
+    <div class="hero-title">Your R-Score, cleaned up.</div>
         <div class="hero-sub">
             Import Omnivox screenshots, autofill credits, see admission ranges, and track scenarios.<br>
             Manual entry stays free.
         </div>
 
-        <div class="hero-badges">
+    <div class="hero-badges">
             <div class="hero-badge">✓ No Omnivox password stored</div>
             <div class="hero-badge">✓ Uses standard 35 + 5 × Z</div>
             <div class="hero-badge">✓ Built for JAC students</div>
         </div>
 
-        <div class="features">
+    <div class="features">
             <a href="/Main" target="_self" class="feat-card">
                 <div class="feat-title">Free Tools</div>
                 <p>Manual entry<br>R-score calculation<br>Min/max settings</p>
