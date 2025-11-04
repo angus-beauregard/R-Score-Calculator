@@ -2106,55 +2106,120 @@ with tab6:
 with tab7:
     st.subheader("Save snapshots & R-score history")
 
+    # make sure history exists
     if "r_history" not in st.session_state:
-        st.session_state.r_history = pd.DataFrame(columns=["Timestamp", "R (central)"])
+        # we keep more than just central R, so we can show it in the table
+        st.session_state.r_history = pd.DataFrame(
+            columns=["Timestamp", "Label", "R (central)", "R (min)", "R (max)"]
+        )
 
-    current_central = st.session_state.get("overall_r_central", None)
+    # --- always try to get the current R from session ---
+    cur_central = st.session_state.get("overall_r_central")
+    cur_min = st.session_state.get("overall_r_min")
+    cur_max = st.session_state.get("overall_r_max")
 
-    colh1, colh2 = st.columns(2)
-    with colh1:
-        if st.button("💾 Save snapshot (adds current central R)"):
-            if current_central is None or pd.isna(current_central):
-                st.warning("Calculate your R in the Results tab first.")
-            else:
-                ts = pd.Timestamp.now().strftime("%Y-%m-%d %H:%M:%S")
-                st.session_state.r_history = pd.concat(
-                    [st.session_state.r_history, pd.DataFrame([{"Timestamp": ts, "R (central)": float(current_central)}])],
-                    ignore_index=True
-                )
-                st.success("Snapshot saved.")
-    with colh2:
-        if not st.session_state.r_history.empty:
-            st.download_button(
-                "⬇️ Download history CSV",
-                data=st.session_state.r_history.to_csv(index=False).encode(),
-                file_name="rscore_history.csv",
-                mime="text/csv"
+    # fallback: if user jumps here first, recompute from df
+    if cur_central is None or pd.isna(cur_central):
+        df_tmp = st.session_state.get("df", pd.DataFrame()).copy()
+        if not df_tmp.empty:
+            df_tmp = clean_numeric(df_tmp, ["Your Grade", "Class Avg", "Std. Dev", "Credits"])
+            df_tmp["Credits"] = df_tmp["Credits"].fillna(1)
+            df_tmp.loc[df_tmp["Credits"] == 0, "Credits"] = 1
+            Z = (df_tmp["Your Grade"] - df_tmp["Class Avg"]) / df_tmp["Std. Dev"]
+            R = 35.0 + 5.0 * Z
+            cur_central = float((R * df_tmp["Credits"]).sum() / df_tmp["Credits"].sum())
+            # use current offsets
+            off_min = float(st.session_state.get("r_offset_min", -2.0))
+            off_max = float(st.session_state.get("r_offset_max",  2.0))
+            cur_min = cur_central + off_min
+            cur_max = cur_central + off_max
+
+    # show current values at top
+    if cur_central is not None and not pd.isna(cur_central):
+        st.markdown(
+            f"**Current R (central):** {cur_central:.2f}  "
+            + (f"• **R (min):** {cur_min:.2f}  " if cur_min is not None else "")
+            + (f"• **R (max):** {cur_max:.2f}" if cur_max is not None else "")
+        )
+    else:
+        st.warning("No R-score calculated yet. Go to the Results tab first.")
+
+    label = st.text_input("Optional name for this snapshot (e.g. 'midterm', 'after Chem update')", value="")
+
+    if st.button("💾 Save snapshot"):
+        if cur_central is None or pd.isna(cur_central):
+            st.warning("Can't save — no R-score available.")
+        else:
+            ts = pd.Timestamp.now().strftime("%Y-%m-%d %H:%M:%S")
+            new_row = {
+                "Timestamp": ts,
+                "Label": label.strip(),
+                "R (central)": float(cur_central),
+                "R (min)": float(cur_min) if cur_min is not None else None,
+                "R (max)": float(cur_max) if cur_max is not None else None,
+            }
+            st.session_state.r_history = pd.concat(
+                [st.session_state.r_history, pd.DataFrame([new_row])],
+                ignore_index=True
             )
+            st.success("Snapshot saved.")
 
+    st.markdown("### Saved snapshots")
+    if st.session_state.r_history.empty:
+        st.info("No snapshots yet. Save one above.")
+    else:
+        # show as a table
+        st.dataframe(
+            st.session_state.r_history.sort_values("Timestamp", ascending=False),
+            use_container_width=True,
+            hide_index=True,
+        )
+
+        # build chart data — make sure Timestamp is datetime and sorted ascending
+        chart_df = st.session_state.r_history.copy()
+        chart_df["Timestamp"] = pd.to_datetime(chart_df["Timestamp"], errors="coerce")
+        chart_df = chart_df.dropna(subset=["Timestamp"]).sort_values("Timestamp")
+
+        # only plot if we have at least 2 points
+        if len(chart_df) >= 1:
+            fig_hist = px.line(
+                chart_df,
+                x="Timestamp",
+                y="R (central)",
+                markers=True,
+                title="R-score over time",
+                hover_data=["Label", "R (min)", "R (max)"]
+            )
+            fig_hist.update_layout(
+                paper_bgcolor="rgba(0,0,0,0)",
+                plot_bgcolor="rgba(255,255,255,0)",
+                font_color="#111827",
+                height=420,
+                margin=dict(l=20, r=20, t=50, b=20),
+            )
+            st.plotly_chart(fig_hist, use_container_width=True)
+
+        # download button
+        st.download_button(
+            "⬇️ Download history CSV",
+            data=chart_df.to_csv(index=False).encode(),
+            file_name="rscore_history.csv",
+            mime="text/csv"
+        )
+
+    # upload merge stays the same if you want it:
     up_hist = st.file_uploader("Upload a previously downloaded history CSV", type=["csv"], key="hist_csv_up")
     if up_hist is not None:
         try:
             hist_in = pd.read_csv(up_hist)
-            need = {"Timestamp", "R (central)"}
-            if not need.issubset(set(hist_in.columns)):
+            needed = {"Timestamp", "R (central)"}
+            if not needed.issubset(set(hist_in.columns)):
                 st.error("History CSV missing required columns: Timestamp, R (central).")
             else:
-                merged = pd.concat([st.session_state.r_history, hist_in[["Timestamp","R (central)"]]], ignore_index=True)
-                merged = merged.drop_duplicates()
+                merged = pd.concat([st.session_state.r_history, hist_in], ignore_index=True)
+                # sort and drop exact duplicates
+                merged = merged.drop_duplicates(subset=["Timestamp", "R (central)", "Label"])
                 st.session_state.r_history = merged
                 st.success(f"Imported {len(hist_in)} rows into your history.")
         except Exception as e:
             st.error(f"History import error: {e}")
-
-    if not st.session_state.r_history.empty:
-        chart_df = st.session_state.r_history.copy()
-        chart_df["Timestamp"] = pd.to_datetime(chart_df["Timestamp"], errors="coerce")
-        chart_df = chart_df.dropna(subset=["Timestamp"]).sort_values("Timestamp")
-        fig_hist = px.line(chart_df, x="Timestamp", y="R (central)", title="R-score over time")
-        fig_hist.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(255,255,255,0)",
-                               font_color="#111827", title_font_size=18, height=420,
-                               margin=dict(l=20,r=20,t=50,b=20))
-        st.plotly_chart(fig_hist, use_container_width=True)
-    else:
-        st.info("No history yet. Save a snapshot to start tracking your R-score over time.")
