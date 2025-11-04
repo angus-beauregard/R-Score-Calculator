@@ -13,29 +13,28 @@ if mode == "login":
     st.switch_page("workingv1.py")
 
 st.markdown("""
-<style>
-.hero-wrap {max-width: 960px; margin: 0 auto; padding: 2.5rem 1.5rem 2rem 1.5rem; text-align: center;}
-.hero-title {font-size: clamp(2.3rem, 4vw, 2.8rem); font-weight: 700; color: #111827;}
-.hero-sub {margin-top: 1rem; font-size: 1rem; color: #4b5563;}
-.hero-badges {margin-top: 1.2rem; display:flex; gap:.6rem; justify-content:center; flex-wrap:wrap;}
-.hero-badge {background: rgba(79,70,229,0.08); border: 1px solid rgba(79,70,229,0.15); padding:.35rem .7rem; border-radius:9999px; font-size:.7rem;}
+    <style>
+    .hero-wrap {max-width: 960px; margin: 0 auto; padding: 2.5rem 1.5rem 2rem 1.5rem; text-align: center;}
+    .hero-title {font-size: clamp(2.3rem, 4vw, 2.8rem); font-weight: 700; color: #111827;}
+    .hero-sub {margin-top: 1rem; font-size: 1rem; color: #4b5563;}
+    .hero-badges {margin-top: 1.2rem; display:flex; gap:.6rem; justify-content:center; flex-wrap:wrap;}
+    .hero-badge {background: rgba(79,70,229,0.08); border: 1px solid rgba(79,70,229,0.15); padding:.35rem .7rem; border-radius:9999px; font-size:.7rem;}
 
-.features {display:flex; justify-content:center; gap:1.2rem; margin-top:2.5rem; flex-wrap:wrap;}
-.feat-card {text-decoration:none !important; background:#fff; border:2px solid #e5e7eb; border-radius:1rem;
-            padding:1.5rem 1.5rem 1.2rem 1.5rem; width:260px; min-height:180px;
-            box-shadow:0 5px 15px rgba(0,0,0,0.05); transition:.15s; text-align:center;}
-.feat-card:hover {transform:scale(1.03); border-color:#6366F1;}
-.feat-title {font-weight:700; font-size:1.05rem; margin-bottom:.45rem;}
-.feat-card p {font-size:.9rem; line-height:1.35; margin:0;}
+    .features {display:flex; justify-content:center; gap:1.2rem; margin-top:2.5rem; flex-wrap:wrap;}
+    .feat-card {text-decoration:none !important; background:#fff; border:2px solid #e5e7eb; border-radius:1rem;
+                padding:1.5rem 1.5rem 1.2rem 1.5rem; width:260px; min-height:180px;
+                box-shadow:0 5px 15px rgba(0,0,0,0.05); transition:.15s; text-align:center;}
+    .feat-card:hover {transform:scale(1.03); border-color:#6366F1;}
+    .feat-title {font-weight:700; font-size:1.05rem; margin-bottom:.45rem;}
+    .feat-card p {font-size:.9rem; line-height:1.35; margin:0;}
+    .pro-card {background:linear-gradient(135deg, #4F46E5 0%, #6366F1 100%); border:none; color:#fff;}
+    .pro-card .feat-title, .pro-card p {color:#fff;}
+    .pro-card:hover {transform:scale(1.05);}
 
-.pro-card {background:linear-gradient(135deg, #4F46E5 0%, #6366F1 100%); border:none; color:#fff;}
-.pro-card .feat-title, .pro-card p {color:#fff;}
-.pro-card:hover {transform:scale(1.05);}
-
-.top-login {
+    .top-login {
     margin-top: 1.5rem;
-}
-.login-link {
+    }
+    .login-link {
     display:inline-block;
     background: #ffffff;
     border: 1px solid rgba(99,102,241,0.2);
@@ -44,13 +43,13 @@ st.markdown("""
     font-size: .85rem;
     color: #4F46E5;
     text-decoration:none !important;
-}
-.login-link:hover {
+    }
+    .login-link:hover {
     background:#4F46E5;
     color:#fff;
-}
-.footer-mini {margin-top:2.5rem; text-align:center; font-size:.75rem; color:#9ca3af;}
-</style>
+    }
+    .footer-mini {margin-top:2.5rem; text-align:center; font-size:.75rem; color:#9ca3af;}
+    </style>
 <div class="hero-wrap">
     <div style="background:rgba(99,102,241,.12);padding:.35rem .75rem;border-radius:9999px;font-size:.7rem;color:#4f46e5;display:inline-block;">
         RScore Pro • Quebec CEGEP R-score helper
