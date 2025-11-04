@@ -104,45 +104,22 @@ def show_landing():
             <div class="hero-badge">✓ Built for JAC students</div>
         </div>
     </div>
-    """, unsafe_allow_html=True)
-
-    # --- Equal sized, centered cards ---
-    col1, col2, col3 = st.columns(3)
-
-    with col1:
-        st.markdown(
-            """
+   
             <a href="/Main" target="_self" class="card-link">
                 <h3>Free Tools</h3>
                 <p>Manual entry<br>R-score calculation<br>Min/max settings</p>
             </a>
-            """,
-            unsafe_allow_html=True,
-        )
-
-    with col2:
-        st.markdown(
-            """
+            
             <a href="/Main" target="_self" class="card-link pro-card">
                 <h3>Pro</h3>
                 <p>OCR import<br>Autofill credits<br>Program comparisons</p>
             </a>
-            """,
-            unsafe_allow_html=True,
-        )
-
-    with col3:
-        st.markdown(
-            """
+           
             <div class="card-link" style="cursor:default;">
                 <h3>Why trust it?</h3>
                 <p>Runs fully in your browser<br>No Omnivox credentials<br>Formula shown</p>
             </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-    st.markdown(
+            
         '<div class="footer-mini">RScore Pro © 2025 • Not affiliated with John Abbott College or Omnivox.</div>',
         unsafe_allow_html=True,
     )
