@@ -3,124 +3,120 @@ import streamlit as st
 st.set_page_config(page_title="RScore Landing", page_icon="📊", layout="centered")
 
 def show_landing():
-    st.markdown("""
-    def show_landing():
-    st.markdown("""
-    <style>
-    .body { background-color: #f9fafb; }
+    st.markdown(
+        """
+        <style>
+        body { background-color: #f9fafb; }
 
-    .hero-wrap {
-        max-width: 960px;
-        margin: 0 auto;
-        padding: 2.5rem 1.5rem 2rem 1.5rem;
-        text-align: center;
-    }
+        .hero-wrap {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 2.5rem 1.5rem 2rem 1.5rem;
+            text-align: center;
+        }
 
-    .hero-title {
-        font-size: clamp(2.3rem, 4vw, 2.8rem);
-        font-weight: 700;
-        color: #111827;
-        letter-spacing: -0.03em;
-    }
+        .hero-title {
+            font-size: clamp(2.3rem, 4vw, 2.8rem);
+            font-weight: 700;
+            color: #111827;
+            letter-spacing: -0.03em;
+        }
 
-    .hero-sub {
-        margin-top: 1rem;
-        font-size: 1rem;
-        color: #4b5563;
-    }
+        .hero-sub {
+            margin-top: 1rem;
+            font-size: 1rem;
+            color: #4b5563;
+        }
 
-    .hero-badges {
-        margin-top: 1.2rem;
-        display: flex;
-        gap: .6rem;
-        justify-content: center;
-        flex-wrap: wrap;
-    }
+        .hero-badges {
+            margin-top: 1.2rem;
+            display: flex;
+            gap: .6rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
 
-    .hero-badge {
-        background: rgba(79,70,229,0.08);
-        border: 1px solid rgba(79,70,229,0.15);
-        color: #1f2937;
-        padding: .35rem .7rem;
-        border-radius: 9999px;
-        font-size: .7rem;
-    }
+        .hero-badge {
+            background: rgba(79,70,229,0.08);
+            border: 1px solid rgba(79,70,229,0.15);
+            color: #1f2937;
+            padding: .35rem .7rem;
+            border-radius: 9999px;
+            font-size: .7rem;
+        }
 
-    /* Fix: keep all 3 boxes in one line but centered */
-    .features {
-        display: flex;
-        justify-content: center;
-        align-items: stretch;
-        gap: 1.5rem;
-        margin-top: 2.5rem;
-        flex-wrap: nowrap;
-        flex-shrink: 0;
-        overflow-x: auto;
-        padding-bottom: 1rem;
-    }
+        /* cards row */
+        .features {
+            display: flex;
+            justify-content: center;
+            align-items: stretch;
+            gap: 1.5rem;
+            margin-top: 2.5rem;
+            flex-wrap: nowrap;       /* keep 3 in one line */
+            overflow-x: auto;        /* but still usable on tiny screens */
+            padding-bottom: 1rem;
+        }
 
-    .feat-card {
-        text-decoration: none !important;
-        color: inherit !important;
-        background: #ffffff;
-        border: 2px solid #e5e7eb;
-        border-radius: 1rem;
-        padding: 1.5rem 1.5rem 1.2rem 1.5rem;
-        width: 260px;
-        min-height: 180px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-        transition: all .15s ease-in-out;
-        text-align: center;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        flex: 0 0 auto;
-    }
+        .feat-card {
+            text-decoration: none !important;
+            color: inherit !important;
+            background: #ffffff;
+            border: 2px solid #e5e7eb;
+            border-radius: 1rem;
+            padding: 1.5rem 1.5rem 1.2rem 1.5rem;
+            width: 260px;
+            min-height: 180px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: all .15s ease-in-out;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            flex: 0 0 auto;
+        }
 
-    .feat-card:hover {
-        transform: scale(1.03);
-        border-color: #6366F1;
-        box-shadow: 0 10px 25px rgba(99,102,241,0.15);
-    }
+        .feat-card:hover {
+            transform: scale(1.03);
+            border-color: #6366F1;
+            box-shadow: 0 10px 25px rgba(99,102,241,0.15);
+        }
 
-    .feat-title {
-        font-weight: 700;
-        font-size: 1.05rem;
-        margin-bottom: .45rem;
-    }
+        .feat-title {
+            font-weight: 700;
+            font-size: 1.05rem;
+            margin-bottom: .45rem;
+        }
 
-    .feat-card p {
-        font-size: .9rem;
-        line-height: 1.35;
-        margin: 0;
-    }
+        .feat-card p {
+            font-size: .9rem;
+            line-height: 1.35;
+            margin: 0;
+        }
 
-    /* PRO card */
-    .pro-card {
-        background: linear-gradient(135deg, #4F46E5 0%, #6366F1 100%);
-        border: none;
-        color: #ffffff !important;
-        box-shadow: 0 10px 25px rgba(99,102,241,0.25);
-    }
+        /* PRO card pop */
+        .pro-card {
+            background: linear-gradient(135deg, #4F46E5 0%, #6366F1 100%);
+            border: none;
+            color: #ffffff !important;
+            box-shadow: 0 10px 25px rgba(99,102,241,0.25);
+        }
+        .pro-card .feat-title,
+        .pro-card p {
+            color: #ffffff !important;
+        }
+        .pro-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 35px rgba(79,70,229,0.4);
+        }
 
-    .pro-card .feat-title,
-    .pro-card p {
-        color: #ffffff !important;
-    }
-
-    .pro-card:hover {
-        transform: scale(1.05);
-        box-shadow: 0 15px 35px rgba(79,70,229,0.4);
-    }
-
-    .footer-mini {
-        margin-top: 2.5rem;
-        text-align: center;
-        font-size: .75rem;
-        color: #9ca3af;
-    }
-    </style>
+        .footer-mini {
+            margin-top: 2.5rem;
+            text-align: center;
+            font-size: .75rem;
+            color: #9ca3af;
+        }
+        </style>
 
     <div class="hero-wrap">
         <div style="display:flex;justify-content:center;margin-bottom:1rem;">
