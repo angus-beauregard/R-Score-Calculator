@@ -124,7 +124,7 @@ def show_landing():
         st.markdown(
             """
             <a href="/Main" target="_self" class="card-link pro-card">
-                <h3>Pro (Mock)</h3>
+                <h3>Pro</h3>
                 <p>OCR import<br>Autofill credits<br>Program comparisons</p>
             </a>
             """,
