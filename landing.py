@@ -38,6 +38,13 @@ def show_landing():
         border-radius:9999px;
         font-size:.7rem;
     }
+    .card-container {
+        display: flex;
+        justify-content: center;
+        gap: 1.2rem;
+        margin-top: 2.5rem;
+        flex-wrap: wrap;
+    }
     .card-link {
         display: flex;
         flex-direction: column;
@@ -48,6 +55,7 @@ def show_landing():
         border: 2px solid #e5e7eb;
         border-radius: 1rem;
         padding: 1.5rem;
+        width: 240px;
         height: 210px;
         box-shadow: 0 5px 15px rgba(0,0,0,0.05);
         transition: all .15s ease-in-out;
@@ -89,39 +97,46 @@ def show_landing():
     }
     </style>
 
-    <div>
+    <div class="hero-wrap">
         <div style="display:flex;justify-content:center;margin-bottom:1rem;">
             <div style="background:rgba(99,102,241,.12);padding:.35rem .75rem;border-radius:9999px;font-size:.7rem;color:#4f46e5;">
                 RScore Pro • Quebec CEGEP R-score helper
             </div>
         </div>
+
         <div class="hero-title">Your R-Score, cleaned up.</div>
-        <div class="hero-sub">Import Omnivox screenshots, autofill credits, see admission ranges, and track scenarios. Manual entry stays free.</div>
+        <div class="hero-sub">
+            Import Omnivox screenshots, autofill credits, see admission ranges, and track scenarios.<br>
+            Manual entry stays free.
+        </div>
 
         <div class="hero-badges">
             <div class="hero-badge">✓ No Omnivox password stored</div>
             <div class="hero-badge">✓ Uses standard 35 + 5 × Z</div>
             <div class="hero-badge">✓ Built for JAC students</div>
         </div>
-    </div>
-   
+
+        <div class="card-container">
             <a href="/Main" target="_self" class="card-link">
                 <h3>Free Tools</h3>
                 <p>Manual entry<br>R-score calculation<br>Min/max settings</p>
             </a>
-            
+
             <a href="/Main" target="_self" class="card-link pro-card">
                 <h3>Pro</h3>
                 <p>OCR import<br>Autofill credits<br>Program comparisons</p>
             </a>
-           
+
             <div class="card-link" style="cursor:default;">
                 <h3>Why trust it?</h3>
                 <p>Runs fully in your browser<br>No Omnivox credentials<br>Formula shown</p>
             </div>
-            
-        '<div class="footer-mini">RScore Pro © 2025 • Not affiliated with John Abbott College or Omnivox.</div>',
-        unsafe_allow_html=True,
-    )
+        </div>
+
+        <div class="footer-mini">
+            RScore Pro © 2025 • Not affiliated with John Abbott College or Omnivox.
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
 show_landing()
