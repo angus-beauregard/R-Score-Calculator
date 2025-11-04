@@ -57,39 +57,39 @@ st.markdown("""
     <div class="hero-title">Your R-Score, cleaned up.</div>
     <div class="hero-sub">Manual stays free. OCR, CSV and extras are premium.</div>
 
-    <div class="hero-badges">
-        <div class="hero-badge">✓ No Omnivox password stored</div>
-        <div class="hero-badge">✓ Uses standard 35 + 5 × Z</div>
-        <div class="hero-badge">✓ Built for JAC students</div>
-    </div>
+<div class="hero-badges">
+    <div class="hero-badge">✓ No Omnivox password stored</div>
+    <div class="hero-badge">✓ Uses standard 35 + 5 × Z</div>        
+    <div class="hero-badge">✓ Built for JAC students</div>
+</div>
 
-    <div class="top-login">
-        <!-- goes to this same page with ?mode=login which then switch_page(...) above -->
-        <a href="?mode=login" class="login-link">Sign in / Create account</a>
-    </div>
+<div class="top-login">
+    <!-- goes to this same page with ?mode=login which then switch_page(...) above -->
+    <a href="?mode=login" class="login-link">Sign in / Create account</a>
+</div>
 
-    <div class="features">
-        <!-- FREE: go straight to free version -->
-        <a href="/free" target="_self" class="feat-card">
-            <div class="feat-title">Free tools</div>
-            <p>Manual entry<br>R-score calculation<br>Basic settings</p>
-        </a>
+<div class="features">
+     <!-- FREE: go straight to free version -->
+    <a href="/free" target="_self" class="feat-card">
+        <div class="feat-title">Free tools</div>
+    <p>Manual entry<br>R-score calculation<br>Basic settings</p>
+    </a>
 
-        <!-- PRO: force login/subscription -->
-        <a href="?mode=login" class="feat-card pro-card">
-            <div class="feat-title">Pro (OCR, CSV)</div>
-            <p>Upload screenshots<br>CSV import<br>Program comparisons</p>
-        </a>
+    <!-- PRO: force login/subscription -->
+    <a href="?mode=login" class="feat-card pro-card">
+        <div class="feat-title">Pro (OCR, CSV)</div>
+        <p>Upload screenshots<br>CSV import<br>Program comparisons</p>
+    </a>
 
-        <!-- INFO -->
-        <div class="feat-card" style="cursor:default;">
-            <div class="feat-title">Why trust it?</div>
-            <p>Runs in browser<br>No Omnivox credentials<br>Formula shown</p>
-        </div>
-    </div>
+    <!-- INFO -->
+<div class="feat-card" style="cursor:default;">
+<div class="feat-title">Why trust it?</div>
+    <p>Runs in browser<br>No Omnivox credentials<br>Formula shown</p>
+</div>
+</div>
 
-    <div class="footer-mini">
-        RScoreCalc © 2025 • Not affiliated with John Abbott College or Omnivox.
-    </div>
+<div class="footer-mini">
+    RScoreCalc © 2025 • Not affiliated with John Abbott College or Omnivox.
+</div>
 </div>
 """, unsafe_allow_html=True)
