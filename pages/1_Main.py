@@ -1513,8 +1513,6 @@ with manual_tab:
         # force the script to re-run so Results tab uses the new df
         st.rerun()
 # ---------- CSV TAB ----------
-with import_tab:
-    require_premium()
 with csv_tab:
     st.write("Upload a CSV. We'll try to auto-detect columns.")
 
@@ -1575,8 +1573,6 @@ with csv_tab:
             st.error(f"CSV error: {e}")
 
 # ---------- IMPORT TAB (Photo OCR only) ----------
-with import_tab:
-    require_premium()
 with import_tab:
     st.markdown("### 📸 Import from Omnivox screenshots")
 
@@ -1844,8 +1840,6 @@ with tab3:
 
 
 # ---------- TAB 4 (Importance) ----------
-with import_tab:
-    require_premium()
 with tab4:
     st.markdown(
     "**What does 'Importance' mean?** It estimates how much your overall R-score reacts to improving a specific course. "
@@ -1887,8 +1881,6 @@ with tab4:
         st.plotly_chart(fig, use_container_width=True)
 
 # ---------- TAB 5 (Biggest gains) ----------
-with import_tab:
-    require_premium()
 with tab5:
     st.subheader("🏆 Biggest Potential R-Score Gains")
 
@@ -2017,8 +2009,6 @@ with tab5:
             st.markdown('</div>', unsafe_allow_html=True)
 
 # ---------- TAB 6 (Programs) ----------
-with import_tab:
-    require_premium()
 with tab6:
     st.markdown('<div class="glass-toolbar">', unsafe_allow_html=True)
     uni_df = load_uni_csv()
