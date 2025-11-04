@@ -121,7 +121,4 @@ with tab_programs:
 
 # 9) SETTINGS (free)
 with tab_settings:
-    st.subheader("R-range settings (free)")
-    r_min = st.number_input("R offset (min)", value=-2.0, step=0.5)
-    r_max = st.number_input("R offset (max)", value=2.0, step=0.5)
-    st.caption("These don’t change the per-course formula (35 + 5×Z), but in Pro you could use them for ranges.")
+    locked_tab()
