@@ -6,6 +6,25 @@ def show_landing():
     st.markdown(
         """
         <style>
+        /* hide top right menu and top header */
+        #MainMenu {visibility: hidden;}
+        header {visibility: hidden;}
+
+        /* hide footer (multiple selectors to catch versions) */
+        footer {visibility: hidden;}
+        footer div {visibility: hidden;}
+        /* newer Streamlit footer containers */
+        div[data-testid="stFooter"] {display: none !important;}
+        section[data-testid="stFooter"] {display: none !important;}
+
+        /* hide sidebar entirely */
+        div[data-testid="stSidebar"] {display: none !important;}
+
+        /* widen main container */
+        .block-container {
+            padding-top: 1rem;
+            max-width: 1100px;
+        }
         body {
             background-color: #f9fafb;
             margin: 0;
