@@ -2113,17 +2113,28 @@ with tab7:
 
     # helper: ALWAYS recompute from the latest table
     def _compute_current_r_from_df():
-        df_tmp = st.session_state.get("df", pd.DataFrame()).copy()
+        # 1) prefer the live manual editor data if it exists
+        if "manual_editor" in st.session_state and st.session_state["manual_editor"] is not None:
+            df_tmp = st.session_state["manual_editor"].copy()
+        else:
+            # fallback to last committed DF
+            df_tmp = st.session_state.get("df", pd.DataFrame()).copy()
+
         if df_tmp.empty:
             return None, None, None
 
+        # make sure all columns exist
+        for col in ["Course Name", "Your Grade", "Class Avg", "Std. Dev", "Credits"]:
+            if col not in df_tmp.columns:
+                df_tmp[col] = np.nan
+
+        # clean numbers
         df_tmp = clean_numeric(df_tmp, ["Your Grade", "Class Avg", "Std. Dev", "Credits"])
         df_tmp["Credits"] = df_tmp["Credits"].fillna(1)
         df_tmp.loc[df_tmp["Credits"] == 0, "Credits"] = 1
 
-        # z scores
+        # z scores (protect against div-by-zero)
         Z = (df_tmp["Your Grade"] - df_tmp["Class Avg"]) / df_tmp["Std. Dev"]
-        # handle div-by-zero -> NaN -> 0
         Z = Z.replace([np.inf, -np.inf], np.nan).fillna(0.0)
 
         R_central_per_course = 35.0 + 5.0 * Z
