@@ -9,7 +9,7 @@ def show_landing():
         body { background-color: #f9fafb; }
 
         .hero-wrap {
-            max-width: 1080px;
+            max-width: 920px;
             margin: 0 auto;
             padding: 2.5rem 1.5rem 2rem 1.5rem;
             text-align: center;
