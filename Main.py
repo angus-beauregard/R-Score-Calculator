@@ -5,6 +5,69 @@ import streamlit as st
 import streamlit.components.v1 as components
 import plotly.express as px
 import shutil
+import requests
+
+SUPABASE_URL = st.secrets["SUPABASE_URL"]
+SUPABASE_KEY = st.secrets["SUPABASE_ANON_KEY"]
+
+auth_headers = {
+    "apikey": SUPABASE_KEY,
+    "Content-Type": "application/json",
+}
+
+st.title("Sign in to RScoreCalc")
+
+email = st.text_input("Email")
+password = st.text_input("Password", type="password")
+
+col1, col2 = st.columns(2)
+
+# --- sign in ---
+with col1:
+    if st.button("Sign in"):
+        url = f"{SUPABASE_URL}/auth/v1/token?grant_type=password"
+        payload = {"email": email, "password": password}
+        r = requests.post(url, json=payload, headers=auth_headers)
+        if r.status_code == 200:
+            data = r.json()
+            # data has access_token, token_type, user, etc.
+            st.session_state["auth"] = data
+            st.success("Logged in")
+            st.rerun()
+        else:
+            st.error(f"Login failed: {r.text}")
+
+# --- sign up ---
+with col2:
+    if st.button("Create account"):
+        url = f"{SUPABASE_URL}/auth/v1/signup"
+        payload = {"email": email, "password": password}
+        r = requests.post(url, json=payload, headers=auth_headers)
+        if r.status_code in (200, 201):
+            st.success("Account created. Check your email to confirm.")
+        else:
+            st.error(f"Signup failed: {r.text}")
+
+auth = st.session_state.get("auth")
+access_token = auth["access_token"]
+user_id = auth["user"]["id"]
+
+profiles_url = f"{SUPABASE_URL}/rest/v1/profiles"
+headers = {
+    "apikey": SUPABASE_KEY,
+    "Authorization": f"Bearer {access_token}",
+}
+params = {
+    "id": f"eq.{user_id}",
+    "select": "*",
+}
+resp = requests.get(profiles_url, headers=headers, params=params)
+rows = resp.json()
+if rows:
+    st.session_state["is_premium"] = rows[0].get("is_premium", False)
+else:
+    st.session_state["is_premium"] = False
+    
 # --- Ensure Tesseract finds its language data ---
 # Check common tessdata directories across macOS and Linux
 for td in (
