@@ -39,16 +39,18 @@ def show_landing():
         font-size:.7rem;
     }
     .card-link {
-        display: block;
-        text-decoration: none;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        text-decoration: none !important;
         background: white;
         border: 2px solid #e5e7eb;
         border-radius: 1rem;
-        padding: 1.2rem;
+        padding: 1.5rem;
+        height: 210px;
         box-shadow: 0 5px 15px rgba(0,0,0,0.05);
         transition: all .15s ease-in-out;
         text-align: left;
-        height: 100%;
     }
     .card-link:hover {
         transform: scale(1.03);
@@ -57,7 +59,7 @@ def show_landing():
     }
     .card-link h3 {
         font-size: 1.1rem;
-        font-weight: 600;
+        font-weight: 700;
         margin-bottom: .3rem;
         color: #111827;
     }
@@ -91,10 +93,9 @@ def show_landing():
     </div>
     """, unsafe_allow_html=True)
 
-    # --- Cards ---
+    # --- Equal sized cards (both link to same page) ---
     col1, col2, col3 = st.columns(3)
 
-    # Both lead to the same Streamlit page now
     with col1:
         st.markdown(
             """
@@ -120,7 +121,7 @@ def show_landing():
     with col3:
         st.markdown(
             """
-            <div class="card-link" style="pointer-events:none;">
+            <div class="card-link" style="cursor:default;">
                 <h3>Why trust it?</h3>
                 <p>Runs fully in your browser<br>No Omnivox credentials<br>Formula shown</p>
             </div>
