@@ -5,3 +5,4 @@ pillow
 pytesseract
 opencv-python-headless
 plotly
+supabase-py
