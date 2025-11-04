@@ -1614,43 +1614,29 @@ with explain_tab:
 with manual_tab:
     st.write("Enter or edit your courses below. Click 'Confirm Changes' when done.")
 
-    # make sure session df exists
     if "df" not in st.session_state:
         st.session_state.df = pd.DataFrame(columns=REQUIRED_COLS)
 
-    # work on a copy
     df_manual = st.session_state.df.copy()
     df_manual = ensure_columns(df_manual)[REQUIRED_COLS]
     df_manual["Course Name"] = df_manual["Course Name"].astype(str).fillna("")
+
+    editor_key = f"manual_editor_{st.session_state.get('manual_editor_version', 0)}"
 
     edited_df = st.data_editor(
         df_manual,
         num_rows="dynamic",
         use_container_width=True,
         hide_index=True,
-        key="manual_editor",
+        key=editor_key,
         column_config={
-            "Course Name": st.column_config.TextColumn("Course Name"),
-            "Your Grade": st.column_config.NumberColumn(
-                "Your Grade", min_value=0.0, max_value=100.0, step=0.01, format="%.2f"
-            ),
-            "Class Avg": st.column_config.NumberColumn(
-                "Class Avg", min_value=0.0, max_value=100.0, step=0.01, format="%.2f"
-            ),
-            "Std. Dev": st.column_config.NumberColumn(
-                "Std. Dev", min_value=0.0, max_value=50.0, step=0.01, format="%.2f"
-            ),
-            "Credits": st.column_config.NumberColumn(
-                "Credits", min_value=0.0, max_value=10.0, step=0.01, format="%.2f"
-            ),
+            # ... your column_config ...
         },
     )
 
     if st.button("✅ Confirm Changes"):
-        # save to session
         st.session_state.df = ensure_columns(edited_df.copy())
         st.success("Changes saved!")
-        # force the script to re-run so Results tab uses the new df
         st.rerun()
 # ---------- CSV TAB ----------
 with import_tab:
