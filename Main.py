@@ -65,26 +65,47 @@ if "auth" not in st.session_state:
     show_login()
     st.stop()
 
-auth = st.session_state.get("auth")
+auth = st.session_state["auth"]
 access_token = auth["access_token"]
 user_id = auth["user"]["id"]
 
+# get profile row from Supabase
 profiles_url = f"{SUPABASE_URL}/rest/v1/profiles"
-headers = {
+headers_authed = {
     "apikey": SUPABASE_KEY,
     "Authorization": f"Bearer {access_token}",
 }
 params = {
     "id": f"eq.{user_id}",
-    "select": "*",
+    "select": "id,is_premium",
 }
-resp = requests.get(profiles_url, headers=headers, params=params)
-rows = resp.json()
+resp = requests.get(profiles_url, headers=headers_authed, params=params)
+rows = resp.json() if resp.ok else []
+
 if rows:
-    st.session_state["is_premium"] = rows[0].get("is_premium", False)
+    st.session_state["is_premium"] = bool(rows[0].get("is_premium", False))
 else:
+    # user exists in auth but not in profiles — treat as free
     st.session_state["is_premium"] = False
-    
+if "tos_accepted" not in st.session_state:
+    st.session_state.tos_accepted = False
+
+if not st.session_state.tos_accepted:
+    # ... your TOS markdown ...
+    agree = st.checkbox("I have read and agree to these Terms of Use.")
+    if st.button("Agree and enter"):
+        if agree:
+            st.session_state.tos_accepted = True
+            st.rerun()
+        else:
+            st.warning("Please check the box to agree.")
+    st.stop()
+
+def require_premium():
+    if not st.session_state.get("is_premium", False):
+        st.markdown("### 🔒 Premium feature")
+        st.write("This section is for premium accounts.")
+        st.stop()
 # --- Ensure Tesseract finds its language data ---
 # Check common tessdata directories across macOS and Linux
 for td in (
