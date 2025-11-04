@@ -69,9 +69,9 @@ st.markdown("""
 </div>
 
 <div class="features">
-     <!-- FREE: go straight to free version -->
-    <a href="/free" target="_self" class="feat-card">
-        <div class="feat-title">Free tools</div>
+    <!-- FREE: go straight to free version -->
+        <a href="/free" target="_self" class="feat-card">
+<div class="feat-title">Free tools</div>
     <p>Manual entry<br>R-score calculation<br>Basic settings</p>
     </a>
 
