@@ -1380,7 +1380,6 @@ if "r_offset_max" not in st.session_state:
 
 # ================== HEADER ==================
 
-)
 def require_premium():
     if not st.session_state.get("is_premium", False):
         st.markdown("### 🔒 Premium feature")
