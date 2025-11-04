@@ -2111,49 +2111,63 @@ with tab7:
             columns=["Timestamp", "Label", "R (central)", "R (min)", "R (max)"]
         )
 
-    # try to get current R from session
-    cur_central = st.session_state.get("overall_r_central")
-    cur_min = st.session_state.get("overall_r_min")
-    cur_max = st.session_state.get("overall_r_max")
-
-    # fallback: recompute if user never opened Results
-    if cur_central is None or pd.isna(cur_central):
+    # helper: ALWAYS recompute from the latest table
+    def _compute_current_r_from_df():
         df_tmp = st.session_state.get("df", pd.DataFrame()).copy()
-        if not df_tmp.empty:
-            df_tmp = clean_numeric(df_tmp, ["Your Grade", "Class Avg", "Std. Dev", "Credits"])
-            df_tmp["Credits"] = df_tmp["Credits"].fillna(1)
-            df_tmp.loc[df_tmp["Credits"] == 0, "Credits"] = 1
-            Z = (df_tmp["Your Grade"] - df_tmp["Class Avg"]) / df_tmp["Std. Dev"]
-            R = 35.0 + 5.0 * Z
-            cur_central = float((R * df_tmp["Credits"]).sum() / df_tmp["Credits"].sum())
-            off_min = float(st.session_state.get("r_offset_min", -2.0))
-            off_max = float(st.session_state.get("r_offset_max",  2.0))
-            cur_min = cur_central + off_min
-            cur_max = cur_central + off_max
+        if df_tmp.empty:
+            return None, None, None
 
-    if cur_central is not None and not pd.isna(cur_central):
-        msg = f"**Current R (central):** {cur_central:.2f}"
-        if cur_min is not None:
-            msg += f" • **R (min):** {cur_min:.2f}"
-        if cur_max is not None:
-            msg += f" • **R (max):** {cur_max:.2f}"
+        df_tmp = clean_numeric(df_tmp, ["Your Grade", "Class Avg", "Std. Dev", "Credits"])
+        df_tmp["Credits"] = df_tmp["Credits"].fillna(1)
+        df_tmp.loc[df_tmp["Credits"] == 0, "Credits"] = 1
+
+        # z scores
+        Z = (df_tmp["Your Grade"] - df_tmp["Class Avg"]) / df_tmp["Std. Dev"]
+        # handle div-by-zero -> NaN -> 0
+        Z = Z.replace([np.inf, -np.inf], np.nan).fillna(0.0)
+
+        R_central_per_course = 35.0 + 5.0 * Z
+        total_credits = df_tmp["Credits"].sum()
+        if total_credits <= 0:
+            return None, None, None
+
+        r_central = float((R_central_per_course * df_tmp["Credits"]).sum() / total_credits)
+        off_min = float(st.session_state.get("r_offset_min", -2.0))
+        off_max = float(st.session_state.get("r_offset_max",  2.0))
+        r_min = r_central + off_min
+        r_max = r_central + off_max
+        return r_central, r_min, r_max
+
+    # show live R from current data (not the old stored one)
+    live_central, live_min, live_max = _compute_current_r_from_df()
+    if live_central is not None:
+        msg = f"**Current R (central):** {live_central:.2f}"
+        if live_min is not None:
+            msg += f" • **R (min):** {live_min:.2f}"
+        if live_max is not None:
+            msg += f" • **R (max):** {live_max:.2f}"
         st.markdown(msg)
     else:
-        st.warning("No R-score calculated yet. Go to the Results tab first.")
+        st.warning("No data yet — add courses or import OCR/CSV first.")
 
-    label = st.text_input("Optional name for this snapshot (e.g. 'midterm', 'after Chem update')", value="")
+    label = st.text_input(
+        "Optional name for this snapshot (e.g. 'after physics', 'term 3 midterm')",
+        value=""
+    )
 
     if st.button("💾 Save snapshot"):
-        if cur_central is None or pd.isna(cur_central):
-            st.warning("Can't save — no R-score available.")
+        # recompute AGAIN right here so we always save the freshest numbers
+        snap_c, snap_min, snap_max = _compute_current_r_from_df()
+        if snap_c is None:
+            st.warning("Can't save — no R-score could be computed from current data.")
         else:
             ts = pd.Timestamp.now().strftime("%Y-%m-%d %H:%M:%S")
             new_row = {
                 "Timestamp": ts,
                 "Label": label.strip(),
-                "R (central)": float(cur_central),
-                "R (min)": float(cur_min) if cur_min is not None else None,
-                "R (max)": float(cur_max) if cur_max is not None else None,
+                "R (central)": float(snap_c),
+                "R (min)": float(snap_min) if snap_min is not None else None,
+                "R (max)": float(snap_max) if snap_max is not None else None,
             }
             st.session_state.r_history = pd.concat(
                 [st.session_state.r_history, pd.DataFrame([new_row])],
@@ -2165,26 +2179,25 @@ with tab7:
     if st.session_state.r_history.empty:
         st.info("No snapshots yet. Save one above.")
     else:
+        # show table
         st.dataframe(
             st.session_state.r_history.sort_values("Timestamp", ascending=False),
             use_container_width=True,
             hide_index=True,
         )
 
-        # ---- chart ----
+        # build chart safely
         chart_df = st.session_state.r_history.copy()
         chart_df["Timestamp"] = pd.to_datetime(chart_df["Timestamp"], errors="coerce")
         chart_df = chart_df.dropna(subset=["Timestamp"]).sort_values("Timestamp")
 
-        # make sure these columns exist so plotly doesn't complain
+        # ensure columns exist
         for col in ["Label", "R (min)", "R (max)"]:
             if col not in chart_df.columns:
                 chart_df[col] = None
 
-        if len(chart_df) >= 1:
-            # only include hover columns that actually exist
+        if not chart_df.empty:
             hover_cols = [c for c in ["Label", "R (min)", "R (max)"] if c in chart_df.columns]
-
             fig_hist = px.line(
                 chart_df,
                 x="Timestamp",
@@ -2209,13 +2222,12 @@ with tab7:
             mime="text/csv"
         )
 
-    # optional import/merge
+    # allow importing old history and merging
     up_hist = st.file_uploader("Upload a previously downloaded history CSV", type=["csv"], key="hist_csv_up")
     if up_hist is not None:
         try:
             hist_in = pd.read_csv(up_hist)
             merged = pd.concat([st.session_state.r_history, hist_in], ignore_index=True)
-            # keep columns consistent
             for col in ["Label", "R (min)", "R (max)"]:
                 if col not in merged.columns:
                     merged[col] = None
