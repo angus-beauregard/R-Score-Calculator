@@ -557,10 +557,25 @@ def app_merge_rows_any(rows):
                 if (dst.get(fld) is None or dst.get(fld) == "") and (dr.get(fld) not in (None, "")):
                     dst[fld] = dr[fld]
     return list(merged.values())
-import importlib
-import ocr_utils as _ocr_utils
-ocr_utils = importlib.reload(_ocr_utils)
+# Try to use external ocr_utils if it exists; otherwise shim to our local OCR.
+try:
+    import importlib
+    import ocr_utils as _ocr_utils
+    ocr_utils = importlib.reload(_ocr_utils)
+except Exception:
+    import types
+    ocr_utils = types.SimpleNamespace()
 
+    # Use our local pipeline so callers can keep using the legacy functions.
+    def _shim_extract_from_image_file(file_bytes: bytes):
+        rows, _status, _preview = app_extract_from_image_bytes(file_bytes)
+        return rows
+
+    def _shim_merge_by_code(rows):
+        return app_merge_rows_any(rows)
+
+    ocr_utils.extract_from_image_file = _shim_extract_from_image_file
+    ocr_utils.merge_by_code = _shim_merge_by_code
 # --- OCR aliases for legacy call sites ---
 # If any old code still calls the bare function names, route them to the module.
 def extract_from_image_file(file_bytes):
