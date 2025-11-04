@@ -65,10 +65,28 @@ st.markdown(
         font-size: .8rem;
         font-weight: 500;
     }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
+    # --- REMOVE SIDEBAR + 3-DOT MENU + HEADER ---
+st.markdown("""
+<style>
+/* Hide hamburger menu, Streamlit header, and footer */
+#MainMenu {visibility: hidden;}
+header {visibility: hidden;}
+footer {visibility: hidden;}
+
+/* Hide sidebar */
+[data-testid="stSidebar"] {
+    display: none;
+}
+
+/* Expand content to full width */
+.block-container {
+    padding-top: 1rem;
+    padding-left: 3rem;
+    padding-right: 3rem;
+    max-width: 100%;
+}
+</style>
+""", unsafe_allow_html=True)
 
 # ---------- HEADER ----------
 st.markdown(
