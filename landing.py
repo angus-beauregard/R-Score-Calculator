@@ -10,7 +10,7 @@ mode = qp.get("mode", [""])[0] if isinstance(qp.get("mode"), list) else qp.get("
 # you can rename to whatever your premium file is called
 if mode == "login":
     # this page just decides “you must log in”, so go to the app that contains the login
-    st.switch_page(Main)
+    st.switch_page(main.py)
 
 st.markdown("""
     <style>
