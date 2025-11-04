@@ -13,16 +13,15 @@ def require_premium():
 
 st.markdown(
     '<h2 style="margin-bottom:0.2rem;">R-Score Dashboard (Free)</h2>'
-    '<p style="color:#6b7280;margin-top:0;">Manual entry, calculation, settings.</p>',
+    '<p style="color:#6b7280;margin-top:0;">Manual entry, basic R-score calculation, and settings.</p>',
     unsafe_allow_html=True
 )
 
 # ---------- tabs ----------
-# these are the tabs you already have in Main.py — we mark some as premium
 tab_help, tab_manual, tab_csv, tab_import, tab_results, tab_importance, tab_gains, tab_programs, tab_settings = st.tabs([
     "Help / Explanation",
     "Manual",
-    "CSV",
+    "CSV 🔒",
     "Import (OCR) 🔒",
     "Results",
     "Importance 🔒",
@@ -35,10 +34,9 @@ tab_help, tab_manual, tab_csv, tab_import, tab_results, tab_importance, tab_gain
 with tab_help:
     st.subheader("How to use the free version")
     st.write(
-        "- Enter courses manually in the **Manual** tab\n"
-        "- Upload a CSV in **CSV** (optional)\n"
+        "- Enter courses manually in **Manual**\n"
         "- See your R-score in **Results**\n"
-        "- Premium tabs are shown but locked so you know what you’d get."
+        "- CSV / OCR / analysis tabs are locked in free so you know what Pro adds."
     )
 
 # make sure there is a df in session
@@ -63,20 +61,9 @@ with tab_manual:
         st.session_state.df = edited
         st.success("Saved.")
 
-# ----- CSV (free) -----
+# ----- CSV (premium) -----
 with tab_csv:
-    st.write("Upload a CSV with the columns: Course Name, Your Grade, Class Avg, Std. Dev, Credits.")
-    up = st.file_uploader("Upload CSV", type=["csv"])
-    if up is not None:
-        try:
-            df_up = pd.read_csv(up)
-            for c in ["Course Name", "Your Grade", "Class Avg", "Std. Dev", "Credits"]:
-                if c not in df_up.columns:
-                    df_up[c] = np.nan
-            st.session_state.df = df_up
-            st.success(f"Loaded {len(df_up)} rows.")
-        except Exception as e:
-            st.error(f"CSV error: {e}")
+    require_premium()
 
 # ----- IMPORT (premium) -----
 with tab_import:
@@ -102,13 +89,14 @@ with tab_results:
 
         df["Z"] = df.apply(zscore, axis=1)
         df["R (central)"] = 35 + 5 * df["Z"]
-        total_credits = df["Credits"].sum()
-        if total_credits <= 0:
-            total_credits = 1
+        total_credits = df["Credits"].sum() or 1
         overall_r = (df["R (central)"] * df["Credits"]).sum() / total_credits
 
         st.metric("R (central)", f"{overall_r:.2f}")
-        st.dataframe(df[["Course Name", "Your Grade", "Class Avg", "Std. Dev", "Credits", "R (central)"]], use_container_width=True)
+        st.dataframe(
+            df[["Course Name", "Your Grade", "Class Avg", "Std. Dev", "Credits", "R (central)"]],
+            use_container_width=True,
+        )
 
 # ----- IMPORTANCE (premium) -----
 with tab_importance:
@@ -124,7 +112,7 @@ with tab_programs:
 
 # ----- SETTINGS (free) -----
 with tab_settings:
-    st.write("You can put your min / max offsets here in free too, or just leave defaults.")
+    st.write("You can adjust R-range offsets here in the free version.")
     min_off = st.number_input("R offset (min)", value=-2.0, step=0.5)
     max_off = st.number_input("R offset (max)", value=2.0, step=0.5)
-    st.caption("Premium version could let you save and track history of these.")
+    st.caption("Pro could save histories and scenarios.")
