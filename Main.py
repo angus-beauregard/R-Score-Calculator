@@ -961,29 +961,36 @@ def get_supabase_client() -> Client:
 supabase = get_supabase_client()
 
 def show_login():
-    st.title("Sign in to RScoreCalc")
+    st.title("Sign in or Sign up to RScoreCalc")
+
     email = st.text_input("Email")
     password = st.text_input("Password", type="password")
 
-    if st.button("Sign in"):
-        try:
-            res = supabase.auth.sign_in_with_password({"email": email, "password": password})
-            user = res.user
-            if user:
-                st.session_state["user"] = user
-                # fetch profile
-                prof = supabase.table("profiles").select("*").eq("id", user.id).single().execute()
-                st.session_state["is_premium"] = prof.data.get("is_premium", False)
-                st.rerun()
-            else:
-                st.error("Login failed.")
-        except Exception as e:
-            st.error(f"Auth error: {e}")
+    col1, col2 = st.columns(2)
 
-# gate
-if "user" not in st.session_state:
-    show_login()
-    st.stop()
+    with col1:
+        if st.button("Sign in"):
+            try:
+                res = supabase.auth.sign_in_with_password({"email": email, "password": password})
+                user = res.user
+                if user:
+                    st.session_state["user"] = user
+                    # fetch profile
+                    prof = supabase.table("profiles").select("*").eq("id", user.id).single().execute()
+                    st.session_state["is_premium"] = prof.data.get("is_premium", False)
+                    st.rerun()
+                else:
+                    st.error("Login failed.")
+            except Exception as e:
+                st.error(f"Auth error: {e}")
+
+    with col2:
+        if st.button("Create account"):
+            try:
+                res = supabase.auth.sign_up({"email": email, "password": password})
+                st.success("✅ Account created! Check your email to confirm before logging in.")
+            except Exception as e:
+                st.error(f"Sign-up error: {e}")
 /* ===== tabs ===== */
 .stTabs [data-baseweb="tab-list"] {
   background: rgba(255,255,255,0.85);
