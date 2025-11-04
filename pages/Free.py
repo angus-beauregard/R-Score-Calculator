@@ -128,16 +128,16 @@ with tab_results:
 
 # 6) IMPORTANCE (locked)
 with tab_importance:
-    locked_tab()
+    show_locked_tab()
 
 # 7) BIGGEST GAINS (locked)
 with tab_gains:
-    locked_tab()
+    show_locked_tab()
 
 # 8) PROGRAMS (locked)
 with tab_programs:
-    locked_tab()
+    show_locked_tab()
 
 # 9) SETTINGS (locker)
 with tab_settings:
-    locked_tab()
+    show_locked_tab()
