@@ -3,6 +3,7 @@ import streamlit as st
 st.set_page_config(page_title="RScore Landing", page_icon="📊", layout="centered")
 
 def show_landing():
+    # ✅ Everything is inside ONE markdown block with unsafe_allow_html=True
     st.markdown("""
     <style>
     body { background-color: #f9fafb; }
@@ -77,7 +78,6 @@ def show_landing():
         font-size: .95rem;
         margin: 0;
     }
-    /* PRO CARD special styling */
     .pro-card {
         background: linear-gradient(135deg, #4F46E5 0%, #6366F1 100%);
         color: white;
@@ -137,6 +137,6 @@ def show_landing():
             RScore Pro © 2025 • Not affiliated with John Abbott College or Omnivox.
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """, unsafe_allow_html=True)  # ✅ this is key!
 
 show_landing()
