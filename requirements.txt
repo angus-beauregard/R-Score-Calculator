@@ -5,4 +5,4 @@ pillow
 pytesseract
 opencv-python-headless
 plotly
-supabase-py
+supabase>=2.4.0
