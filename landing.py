@@ -7,10 +7,10 @@ def show_landing():
     def show_landing():
     st.markdown("""
     <style>
-    body { background-color: #f9fafb; }
+    .body { background-color: #f9fafb; }
 
     .hero-wrap {
-        max-width:960px;
+        max-width: 960px;
         margin: 0 auto;
         padding: 2.5rem 1.5rem 2rem 1.5rem;
         text-align: center;
