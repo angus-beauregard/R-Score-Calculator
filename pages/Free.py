@@ -1,31 +1,91 @@
-# pages/Free.py
 import streamlit as st
 import pandas as pd
 import numpy as np
 
-st.set_page_config(page_title="RScore – Free", layout="wide")
+# ---------- PAGE CONFIG ----------
+st.set_page_config(page_title="R-Score Dashboard (Free)", layout="wide")
 
-def show_locked_tab():
-    st.markdown("### 🔒 Premium feature")
-    st.write("This section is part of the Pro version. Upgrade on the landing page to unlock it.")
+# ---------- HANDLE "UPGRADE" QUERY ----------
+# If user clicks the HTML link ?upgrade=1 we set premium and jump to main app
+qp = st.query_params
+if "upgrade" in qp:
+    st.session_state.is_premium = True
+    st.session_state.onboarded = True
+    # adjust this to the real main/pro app filename
+    st.switch_page("app.py")
 
+# ---------- BASE STYLES ----------
+st.markdown(
+    """
+    <style>
+    .top-banner {
+        background: #e5edf7;
+        border: 1px solid #d1ddf0;
+        border-radius: 14px;
+        padding: .7rem 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+    .top-banner-text {
+        color: #1f2a44;
+        font-size: .9rem;
+    }
+    .upgrade-btn {
+        background: #ffffff;
+        border: 1px solid rgba(99,102,241,0.35);
+        border-radius: 9999px;
+        padding: .45rem 1.1rem .5rem 1.1rem;
+        color: #4F46E5;
+        font-weight: 600;
+        text-decoration: none;
+        white-space: nowrap;
+        transition: all .12s ease-in-out;
+    }
+    .upgrade-btn:hover {
+        background: #4F46E5;
+        color: #ffffff;
+    }
+    /* inline upgrade link for locked tabs */
+    .inline-upgrade {
+        display: inline-block;
+        margin-top: .7rem;
+        background: #4F46E5;
+        color: #fff !important;
+        text-decoration: none !important;
+        padding: .35rem .85rem;
+        border-radius: 9999px;
+        font-size: .8rem;
+        font-weight: 500;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+# ---------- HEADER ----------
 st.markdown(
     '<h2 style="margin-bottom:0.2rem;">R-Score Dashboard (Free)</h2>'
     '<p style="color:#6b7280;margin-top:0;">Manual entry, basic R-score calculation, and settings.</p>',
-    unsafe_allow_html=True
+    unsafe_allow_html=True,
 )
-# ===== UPGRADE BAR AT THE TOP =====
-with st.container():
-    col1, col2 = st.columns([3, 1])
-    with col1:
-        st.info("You’re on the free version. CSV, OCR, importance, and programs are premium.")
-    with col2:
-        if st.button("✨ Upgrade to Premium", use_container_width=True):
-            # FUTURE: redirect to Stripe
-            st.session_state.is_premium = True
-            st.session_state.onboarded = True
-            st.switch_page("app.py")  # adjust to your main app filename
 
+# ---------- TOP BANNER (NO STREAMLIT BUTTON) ----------
+st.markdown(
+    """
+    <div class="top-banner">
+        <div class="top-banner-text">
+            You’re on the free version. CSV, OCR, importance, and programs are premium.
+        </div>
+        <a href="?upgrade=1" class="upgrade-btn">✨ Upgrade to Premium</a>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+# ---------- TABS ----------
 tabs = st.tabs([
     "Help / Explanation",
     "Manual",
@@ -49,20 +109,29 @@ tabs = st.tabs([
     tab_settings,
 ) = tabs
 
-# ensure df exists
+# make sure we have a df
 if "df" not in st.session_state:
-    st.session_state.df = pd.DataFrame(columns=["Course Name", "Your Grade", "Class Avg", "Std. Dev", "Credits"])
+    st.session_state.df = pd.DataFrame(
+        columns=["Course Name", "Your Grade", "Class Avg", "Std. Dev", "Credits"]
+    )
 
-# 1) HELP
+
+def locked_tab():
+    st.markdown("### 🔒 Premium feature")
+    st.write("This section is part of the Pro version.")
+    st.markdown('<a href="?upgrade=1" class="inline-upgrade">Upgrade to Premium</a>', unsafe_allow_html=True)
+
+
+# -------- Help tab (free) --------
 with tab_help:
     st.subheader("How to use the free version")
     st.write(
         "- Add courses in **Manual**\n"
         "- See your R-score in **Results**\n"
-        "- CSV / OCR / analysis tabs are locked here so users see what Pro adds."
+        "- Premium tabs stay visible so people know what Pro adds."
     )
 
-# 2) MANUAL (free)
+# -------- Manual tab (free) --------
 with tab_manual:
     st.write("Enter or edit your courses below.")
     base_df = st.session_state.df.copy()
@@ -70,31 +139,31 @@ with tab_manual:
     for c in needed:
         if c not in base_df.columns:
             base_df[c] = ""
+    # data_editor is fine – user needs to edit somehow
     edited = st.data_editor(
         base_df,
         num_rows="dynamic",
         use_container_width=True,
         hide_index=True,
     )
-    if st.button("✅ Save changes (free)"):
-        st.session_state.df = edited
-        st.success("Saved.")
+    # no streamlit button; just auto-save on edit
+    st.session_state.df = edited
 
-# 3) CSV (locked, but no st.stop)
+# -------- CSV tab (locked) --------
 with tab_csv:
-    show_locked_tab()
+    locked_tab()
 
-# 4) IMPORT (locked)
+# -------- Import tab (locked) --------
 with tab_import:
-    show_locked_tab()
+    locked_tab()
 
-# 5) RESULTS (free)
+# -------- Results tab (free) --------
 with tab_results:
     df = st.session_state.df.copy()
     if df.empty:
         st.warning("No data yet. Add courses in the **Manual** tab.")
     else:
-        # numeric cleanup
+        # clean
         for c in ["Your Grade", "Class Avg", "Std. Dev", "Credits"]:
             df[c] = pd.to_numeric(df[c], errors="coerce")
         df["Credits"] = df["Credits"].fillna(1)
@@ -112,24 +181,29 @@ with tab_results:
         total_credits = df["Credits"].sum() or 1
         overall_r = (df["R (central)"] * df["Credits"]).sum() / total_credits
 
-        st.metric("R (central)", f"{overall_r:.2f}")
+        st.markdown(f"### Your R (central): **{overall_r:.2f}**")
         st.dataframe(
             df[["Course Name", "Your Grade", "Class Avg", "Std. Dev", "Credits", "R (central)"]],
             use_container_width=True,
         )
 
-# 6) IMPORTANCE (locked)
+# -------- Importance tab (locked) --------
 with tab_importance:
-    show_locked_tab()
+    locked_tab()
 
-# 7) BIGGEST GAINS (locked)
+# -------- Biggest gains tab (locked) --------
 with tab_gains:
-    show_locked_tab()
+    locked_tab()
 
-# 8) PROGRAMS (locked)
+# -------- Programs tab (locked) --------
 with tab_programs:
-    show_locked_tab()
+    locked_tab()
 
-# 9) SETTINGS (free)
+# -------- Settings tab (free) --------
 with tab_settings:
-    show_locked_tab()
+    st.subheader("R-range settings (free)")
+    st.write("These are just shown for now in free — Pro can use them in more places.")
+    # no streamlit button here either; just inputs
+    rmin = st.number_input("R offset (min)", value=-2.0, step=0.5, key="free_r_offset_min")
+    rmax = st.number_input("R offset (max)", value=2.0, step=0.5, key="free_r_offset_max")
+    st.caption(f"Current range example: R(min) = R - {abs(rmin):.1f}, R(max) = R + {abs(rmax):.1f}")
