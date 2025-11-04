@@ -1076,7 +1076,7 @@ if not st.session_state.tos_accepted:
         - Not attempt unauthorized access, phishing, scraping, or any activity prohibited by JAC policies or law.
         - Accept that results are estimates based on inputs you provide; no warranty is given.
 
-        Reference: JAC policies are available at <https://www.johnabbott.qc.ca/policies>. Relevant Omnivox terms include (non‑exhaustive): password confidentiality, prohibition on unauthorized access, and restrictions on reproducing content or disrupting services.
+        Reference: JAC policies are available at <https://johnabbott.omnivox.ca/intr/Module/Information/Conditions.aspx>. Relevant Omnivox terms include (non‑exhaustive): password confidentiality, prohibition on unauthorized access, and restrictions on reproducing content or disrupting services.
         """
     )
     with st.expander("Reference: Omnivox terms (excerpts)"):
