@@ -143,7 +143,7 @@ def show_landing():
     <div class="features">
             <a href="/Free" target="_self" class="feat-card">
     <div class="feat-title">Free Tools</div>
-                <p>Manual entry<br>R-score calculation</p>
+                <p>Limited Acess<br>Manual entry<br>R-score calculation</p>
             </a>
             <a href="/Main" target="_self" class="feat-card pro-card">
     <div class="feat-title">Pro</div>
