@@ -6,7 +6,12 @@ def show_landing():
     st.markdown(
         """
         <style>
-        body { background-color: #f9fafb; }
+        body {
+            background-color: #f9fafb;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden; /* ✅ removes side scroll globally */
+        }
 
         .hero-wrap {
             max-width: 960px;
@@ -45,16 +50,14 @@ def show_landing():
             font-size: .7rem;
         }
 
-        /* cards row */
+        /* 3 boxes centered perfectly without scrolling */
         .features {
             display: flex;
             justify-content: center;
             align-items: stretch;
             gap: 1.5rem;
             margin-top: 2.5rem;
-            flex-wrap: nowrap;       /* keep 3 in one line */
-            overflow-x: auto;        /* but still usable on tiny screens */
-            padding-bottom: 1rem;
+            flex-wrap: wrap; /* ✅ allows neat wrapping instead of scroll */
         }
 
         .feat-card {
@@ -73,7 +76,6 @@ def show_landing():
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            flex: 0 0 auto;
         }
 
         .feat-card:hover {
@@ -94,17 +96,19 @@ def show_landing():
             margin: 0;
         }
 
-        /* PRO card pop */
+        /* PRO card stands out */
         .pro-card {
             background: linear-gradient(135deg, #4F46E5 0%, #6366F1 100%);
             border: none;
             color: #ffffff !important;
             box-shadow: 0 10px 25px rgba(99,102,241,0.25);
         }
+
         .pro-card .feat-title,
         .pro-card p {
             color: #ffffff !important;
         }
+
         .pro-card:hover {
             transform: scale(1.05);
             box-shadow: 0 15px 35px rgba(79,70,229,0.4);
