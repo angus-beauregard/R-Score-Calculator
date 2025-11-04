@@ -5,6 +5,20 @@ import streamlit as st
 import streamlit.components.v1 as components
 import plotly.express as px
 import shutil
+# --- Ensure Tesseract finds its language data ---
+# Check common tessdata directories across macOS and Linux
+for td in (
+    "/opt/homebrew/share/tessdata",              # macOS Homebrew
+    "/usr/local/share/tessdata",                 # Linux local installs
+    "/usr/share/tesseract-ocr/5/tessdata",       # Ubuntu 22.04+ (Streamlit Cloud)
+    "/usr/share/tesseract-ocr/4.00/tessdata",    # Older Linux systems
+):
+    if os.path.isdir(td):
+        os.environ.setdefault("TESSDATA_PREFIX", td)
+        print(f"[INFO] Tesseract data found at: {td}")
+        break
+else:
+    print("[WARNING] No valid TESSDATA_PREFIX found — OCR may fail.")
 try:
     import pytesseract  # type: ignore
     # Common Homebrew locations
