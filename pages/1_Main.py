@@ -109,7 +109,7 @@ NAV_JUNK_PREFIXES = tuple([
     "assignments", "calendar", "class forum", "course documents", "grades",
     "list of my absences", "online classes", "recommended websites",
     "teachers info", "my services", "team forums", "current average",
-    "omnivox", "léa", "angus beauregard", "john abbott college"
+    "omnivox", "léa", "john abbott college"
 ])
 def _clean_course_name(name: str) -> str:
     if not name:
@@ -251,7 +251,7 @@ def _parse_omnivox_text(text: str) -> List[Dict[str, Any]]:
         t = (s or "").strip().lower()
         if not t:
             return True
-        if any(k in t for k in ("omnivox", "john abbott college", "angus beauregard")):
+        if any(k in t for k in ("omnivox", "john abbott college", )):
             return True
         if any(t.startswith(p) for p in NAV_JUNK_PREFIXES):
             return True
@@ -2110,7 +2110,7 @@ with tab6:
 st.markdown("""
 <hr style="margin-top:40px;opacity:0.3">
 <div style="text-align:center; color:gray; font-size:0.9em;">
-RScore Pro © 2025 • Built by Angus Beauregard<br>
+RScore Pro © 2025<br>
 <a href="https://rscore.app/privacy" target="_blank">Privacy Policy</a> •
 <a href="https://rscore.app/terms" target="_blank">Terms of Service</a>
 </div>
