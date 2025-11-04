@@ -1,16 +1,27 @@
 import os
+import shutil
+import io
+import re
+from typing import List, Dict, Any
+
 import numpy as np
 import pandas as pd
-import streamlit as st
-import streamlit.components.v1 as components
-import plotly.express as px
-import shutil
 import requests
+import streamlit as st
+import plotly.express as px
 
+# -------------------------------------------------
+# basic page config
+# -------------------------------------------------
+st.set_page_config(page_title="R-Score Dashboard", layout="wide")
+
+# -------------------------------------------------
+# Supabase creds from Streamlit secrets
+# -------------------------------------------------
 SUPABASE_URL = st.secrets["SUPABASE_URL"]
 SUPABASE_KEY = st.secrets["SUPABASE_ANON_KEY"]
 
-auth_headers = {
+AUTH_HEADERS = {
     "apikey": SUPABASE_KEY,
     "Content-Type": "application/json",
 }
