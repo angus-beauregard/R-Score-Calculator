@@ -2111,16 +2111,28 @@ with tab7:
             columns=["Timestamp", "Label", "R (central)", "R (min)", "R (max)"]
         )
 
+    def _to_df(obj):
+        """Turn whatever we got from session into a pandas DataFrame."""
+        if obj is None:
+            return pd.DataFrame()
+        if isinstance(obj, pd.DataFrame):
+            return obj.copy()
+        # streamlit sometimes gives list-of-dicts from editors
+        try:
+            return pd.DataFrame(obj).copy()
+        except Exception:
+            return pd.DataFrame()
+
     # helper: ALWAYS recompute from the latest table
     def _compute_current_r_from_df():
         # 1) prefer the live manual editor data if it exists
         if "manual_editor" in st.session_state and st.session_state["manual_editor"] is not None:
-            df_tmp = st.session_state["manual_editor"].copy()
+            df_tmp = _to_df(st.session_state["manual_editor"])
         else:
             # fallback to last committed DF
-            df_tmp = st.session_state.get("df", pd.DataFrame()).copy()
+            df_tmp = _to_df(st.session_state.get("df", pd.DataFrame()))
 
-        if df_tmp.empty:
+        if df_tmp.shape[0] == 0:
             return None, None, None
 
         # make sure all columns exist
