@@ -2101,24 +2101,22 @@ with tab6:
                 )
 
         # Only close toolbar div once
-
-    # ---------- TAB 7 (Save & History) ----------
+# ---------- TAB 7 (Save & History) ----------
 with tab7:
     st.subheader("Save snapshots & R-score history")
 
     # make sure history exists
     if "r_history" not in st.session_state:
-        # we keep more than just central R, so we can show it in the table
         st.session_state.r_history = pd.DataFrame(
             columns=["Timestamp", "Label", "R (central)", "R (min)", "R (max)"]
         )
 
-    # --- always try to get the current R from session ---
+    # try to get current R from session
     cur_central = st.session_state.get("overall_r_central")
     cur_min = st.session_state.get("overall_r_min")
     cur_max = st.session_state.get("overall_r_max")
 
-    # fallback: if user jumps here first, recompute from df
+    # fallback: recompute if user never opened Results
     if cur_central is None or pd.isna(cur_central):
         df_tmp = st.session_state.get("df", pd.DataFrame()).copy()
         if not df_tmp.empty:
@@ -2128,19 +2126,18 @@ with tab7:
             Z = (df_tmp["Your Grade"] - df_tmp["Class Avg"]) / df_tmp["Std. Dev"]
             R = 35.0 + 5.0 * Z
             cur_central = float((R * df_tmp["Credits"]).sum() / df_tmp["Credits"].sum())
-            # use current offsets
             off_min = float(st.session_state.get("r_offset_min", -2.0))
             off_max = float(st.session_state.get("r_offset_max",  2.0))
             cur_min = cur_central + off_min
             cur_max = cur_central + off_max
 
-    # show current values at top
     if cur_central is not None and not pd.isna(cur_central):
-        st.markdown(
-            f"**Current R (central):** {cur_central:.2f}  "
-            + (f"• **R (min):** {cur_min:.2f}  " if cur_min is not None else "")
-            + (f"• **R (max):** {cur_max:.2f}" if cur_max is not None else "")
-        )
+        msg = f"**Current R (central):** {cur_central:.2f}"
+        if cur_min is not None:
+            msg += f" • **R (min):** {cur_min:.2f}"
+        if cur_max is not None:
+            msg += f" • **R (max):** {cur_max:.2f}"
+        st.markdown(msg)
     else:
         st.warning("No R-score calculated yet. Go to the Results tab first.")
 
@@ -2168,27 +2165,33 @@ with tab7:
     if st.session_state.r_history.empty:
         st.info("No snapshots yet. Save one above.")
     else:
-        # show as a table
         st.dataframe(
             st.session_state.r_history.sort_values("Timestamp", ascending=False),
             use_container_width=True,
             hide_index=True,
         )
 
-        # build chart data — make sure Timestamp is datetime and sorted ascending
+        # ---- chart ----
         chart_df = st.session_state.r_history.copy()
         chart_df["Timestamp"] = pd.to_datetime(chart_df["Timestamp"], errors="coerce")
         chart_df = chart_df.dropna(subset=["Timestamp"]).sort_values("Timestamp")
 
-        # only plot if we have at least 2 points
+        # make sure these columns exist so plotly doesn't complain
+        for col in ["Label", "R (min)", "R (max)"]:
+            if col not in chart_df.columns:
+                chart_df[col] = None
+
         if len(chart_df) >= 1:
+            # only include hover columns that actually exist
+            hover_cols = [c for c in ["Label", "R (min)", "R (max)"] if c in chart_df.columns]
+
             fig_hist = px.line(
                 chart_df,
                 x="Timestamp",
                 y="R (central)",
                 markers=True,
                 title="R-score over time",
-                hover_data=["Label", "R (min)", "R (max)"]
+                hover_data=hover_cols,
             )
             fig_hist.update_layout(
                 paper_bgcolor="rgba(0,0,0,0)",
@@ -2199,7 +2202,6 @@ with tab7:
             )
             st.plotly_chart(fig_hist, use_container_width=True)
 
-        # download button
         st.download_button(
             "⬇️ Download history CSV",
             data=chart_df.to_csv(index=False).encode(),
@@ -2207,19 +2209,18 @@ with tab7:
             mime="text/csv"
         )
 
-    # upload merge stays the same if you want it:
+    # optional import/merge
     up_hist = st.file_uploader("Upload a previously downloaded history CSV", type=["csv"], key="hist_csv_up")
     if up_hist is not None:
         try:
             hist_in = pd.read_csv(up_hist)
-            needed = {"Timestamp", "R (central)"}
-            if not needed.issubset(set(hist_in.columns)):
-                st.error("History CSV missing required columns: Timestamp, R (central).")
-            else:
-                merged = pd.concat([st.session_state.r_history, hist_in], ignore_index=True)
-                # sort and drop exact duplicates
-                merged = merged.drop_duplicates(subset=["Timestamp", "R (central)", "Label"])
-                st.session_state.r_history = merged
-                st.success(f"Imported {len(hist_in)} rows into your history.")
+            merged = pd.concat([st.session_state.r_history, hist_in], ignore_index=True)
+            # keep columns consistent
+            for col in ["Label", "R (min)", "R (max)"]:
+                if col not in merged.columns:
+                    merged[col] = None
+            merged = merged.drop_duplicates(subset=["Timestamp", "R (central)", "Label"])
+            st.session_state.r_history = merged
+            st.success(f"Imported {len(hist_in)} rows into your history.")
         except Exception as e:
             st.error(f"History import error: {e}")
