@@ -38,6 +38,8 @@ def show_landing():
         border-radius:9999px;
         font-size:.7rem;
     }
+
+    /* cards row */
     .features {
         display: flex;
         justify-content: center;
@@ -45,50 +47,63 @@ def show_landing():
         margin-top: 2.5rem;
         flex-wrap: wrap;
     }
+
+    /* base card, but it's an <a>, so reset link styles here */
     .feat-card {
-        background: white;
+        text-decoration: none !important;
+        color: inherit !important;
+        background: #ffffff;
         border: 2px solid #e5e7eb;
         border-radius: 1rem;
-        padding: 1.5rem;
+        padding: 1.5rem 1.5rem 1.2rem 1.5rem;
         width: 260px;
+        min-height: 180px;
         box-shadow: 0 5px 15px rgba(0,0,0,0.05);
         transition: all .15s ease-in-out;
         text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
     }
     .feat-card:hover {
         transform: scale(1.03);
         border-color: #6366F1;
         box-shadow: 0 10px 25px rgba(99,102,241,0.15);
     }
+
     .feat-title {
         font-weight: 700;
-        font-size: 1.1rem;
-        margin-bottom: .5rem;
-    }
-    .feat-card a {
-        color: inherit;
-        text-decoration: none !important;
+        font-size: 1.05rem;
+        margin-bottom: .45rem;
     }
     .feat-card p {
-        font-size: .95rem;
-        color: #374151;
+        font-size: .9rem;
+        line-height: 1.35;
         margin: 0;
     }
+
+    /* PRO card */
+    .pro-card {
+        background: linear-gradient(135deg, #4F46E5 0%, #6366F1 100%);
+        border: none;
+        color: #ffffff !important;
+        box-shadow: 0 10px 25px rgba(99,102,241,0.25);
+    }
+    .pro-card .feat-title,
+    .pro-card p {
+        color: #ffffff !important;
+    }
+    .pro-card:hover {
+        transform: scale(1.05);
+        box-shadow: 0 15px 35px rgba(79,70,229,0.4);
+    }
+
     .footer-mini {
         margin-top: 2.5rem;
         text-align:center;
         font-size:.75rem;
         color:#9ca3af;
-    }
-    .pro-card {
-        background: linear-gradient(135deg, #4F46E5 0%, #6366F1 100%);
-        color: white;
-        border: none;
-        box-shadow: 0 10px 25px rgba(99,102,241,0.25);
-    }
-    .pro-card:hover {
-        transform: scale(1.05);
-        box-shadow: 0 15px 35px rgba(79,70,229,0.4);
     }
     </style>
 
