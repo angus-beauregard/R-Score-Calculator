@@ -1050,16 +1050,6 @@ header, div[data-testid="stToolbar"] {
   padding: 1rem 1.25rem;
   box-shadow: 0 12px 30px rgba(0,0,0,0.3);
 }
-import streamlit as st
-from supabase import create_client, Client
-
-@st.cache_resource
-def get_supabase_client() -> Client:
-    url = st.secrets["SUPABASE_URL"]
-    key = st.secrets["SUPABASE_KEY"]
-    return create_client(url, key)
-
-supabase = get_supabase_client()
 
 def show_login():
     st.title("Sign in or Sign up to RScoreCalc")
