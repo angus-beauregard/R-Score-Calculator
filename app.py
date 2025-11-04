@@ -1474,8 +1474,8 @@ with manual_tab:
     df_display = autofill_credits_df(df_display)
     # Show only the 5 core columns in the editor (hide the debug "Credits Source")
 df_display = df_display[REQUIRED_COLS]
-    if "Course Name" in df_display.columns:
-        df_display["Course Name"] = df_display["Course Name"].astype(str).fillna("")
+if "Course Name" in df_display.columns:
+    df_display["Course Name"] = df_display["Course Name"].astype(str).fillna("")
 
     edited_df = st.data_editor(
         df_display,
