@@ -1531,7 +1531,7 @@ with csv_tab:
         """
     )
 
-    up = st.file_uploader("Upload CSV", type=["csv"], key="csv_up")
+up = st.file_uploader("Upload CSV", type=["csv"], key="csv_up")
     if up is not None:
         try:
             df_up = pd.read_csv(up, encoding="utf-8-sig", engine="python")
@@ -1552,24 +1552,22 @@ with csv_tab:
             for col in ["Course Name", "Your Grade", "Class Avg", "Std. Dev", "Credits"]:
                 if col not in df_up.columns:
                     df_up[col] = np.nan
+
             # numeric cleanup
             df_up["Credits"] = pd.to_numeric(df_up["Credits"], errors="coerce").fillna(1)
             df_up.loc[df_up["Credits"] == 0, "Credits"] = 1
 
-            # ✅ 1) drop the manual editor widget state if it exists
-            if "manual_editor" in st.session_state:
-                del st.session_state["manual_editor"]
-
-            # ✅ 2) store the new data
+            # store to session
             st.session_state.df = df_up
 
-            st.success(f"Loaded {len(df_up)} rows from CSV.")
+            # 👇 bump the editor version so the Manual tab re-renders with new data
+            st.session_state.manual_editor_version = st.session_state.get("manual_editor_version", 0) + 1
 
-            # ✅ 3) force a rerun so the Manual tab re-renders with new data
+            st.success(f"Loaded {len(df_up)} rows from CSV.")
             st.rerun()
 
-        except Exception as e:
-            st.error(f"CSV error: {e}")
+    except Exception as e:
+        st.error(f"CSV error: {e}")
 
 # ---------- IMPORT TAB (Photo OCR only) ----------
 with import_tab:
