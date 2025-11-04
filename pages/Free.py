@@ -5,11 +5,9 @@ import numpy as np
 
 st.set_page_config(page_title="RScore – Free", layout="wide")
 
-# ---------- helper to block premium ----------
-def require_premium():
+def show_locked_tab():
     st.markdown("### 🔒 Premium feature")
-    st.write("This section is available in the Pro version. Go back to the landing page and choose **Pro** to unlock it.")
-    st.stop()
+    st.write("This section is part of the Pro version. Upgrade on the landing page to unlock it.")
 
 st.markdown(
     '<h2 style="margin-bottom:0.2rem;">R-Score Dashboard (Free)</h2>'
@@ -17,8 +15,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# ---------- tabs ----------
-tab_help, tab_manual, tab_csv, tab_import, tab_results, tab_importance, tab_gains, tab_programs, tab_settings = st.tabs([
+tabs = st.tabs([
     "Help / Explanation",
     "Manual",
     "CSV 🔒",
@@ -29,23 +26,34 @@ tab_help, tab_manual, tab_csv, tab_import, tab_results, tab_importance, tab_gain
     "Programs 🔒",
     "Settings",
 ])
+(
+    tab_help,
+    tab_manual,
+    tab_csv,
+    tab_import,
+    tab_results,
+    tab_importance,
+    tab_gains,
+    tab_programs,
+    tab_settings,
+) = tabs
 
-# ----- HELP (free) -----
-with tab_help:
-    st.subheader("How to use the free version")
-    st.write(
-        "- Enter courses manually in **Manual**\n"
-        "- See your R-score in **Results**\n"
-        "- CSV / OCR / analysis tabs are locked in free so you know what Pro adds."
-    )
-
-# make sure there is a df in session
+# ensure df exists
 if "df" not in st.session_state:
     st.session_state.df = pd.DataFrame(columns=["Course Name", "Your Grade", "Class Avg", "Std. Dev", "Credits"])
 
-# ----- MANUAL (free) -----
+# 1) HELP
+with tab_help:
+    st.subheader("How to use the free version")
+    st.write(
+        "- Add courses in **Manual**\n"
+        "- See your R-score in **Results**\n"
+        "- CSV / OCR / analysis tabs are locked here so users see what Pro adds."
+    )
+
+# 2) MANUAL (free)
 with tab_manual:
-    st.write("Enter or edit your courses below. This is free.")
+    st.write("Enter or edit your courses below.")
     base_df = st.session_state.df.copy()
     needed = ["Course Name", "Your Grade", "Class Avg", "Std. Dev", "Credits"]
     for c in needed:
@@ -61,34 +69,35 @@ with tab_manual:
         st.session_state.df = edited
         st.success("Saved.")
 
-# ----- CSV (premium) -----
+# 3) CSV (locked, but no st.stop)
 with tab_csv:
-    require_premium()
+    show_locked_tab()
 
-# ----- IMPORT (premium) -----
+# 4) IMPORT (locked)
 with tab_import:
-    require_premium()
+    show_locked_tab()
 
-# ----- RESULTS (free) -----
+# 5) RESULTS (free)
 with tab_results:
     df = st.session_state.df.copy()
     if df.empty:
-        st.warning("No data yet.")
+        st.warning("No data yet. Add courses in the **Manual** tab.")
     else:
-        # clean numerics
+        # numeric cleanup
         for c in ["Your Grade", "Class Avg", "Std. Dev", "Credits"]:
             df[c] = pd.to_numeric(df[c], errors="coerce")
         df["Credits"] = df["Credits"].fillna(1)
         df.loc[df["Credits"] == 0, "Credits"] = 1
 
-        def zscore(row):
+        def zscore_row(row):
             g, a, s = row["Your Grade"], row["Class Avg"], row["Std. Dev"]
             if pd.isna(g) or pd.isna(a) or pd.isna(s) or s == 0:
                 return 0.0
             return (g - a) / s
 
-        df["Z"] = df.apply(zscore, axis=1)
+        df["Z"] = df.apply(zscore_row, axis=1)
         df["R (central)"] = 35 + 5 * df["Z"]
+
         total_credits = df["Credits"].sum() or 1
         overall_r = (df["R (central)"] * df["Credits"]).sum() / total_credits
 
@@ -98,21 +107,21 @@ with tab_results:
             use_container_width=True,
         )
 
-# ----- IMPORTANCE (premium) -----
+# 6) IMPORTANCE (locked)
 with tab_importance:
-    require_premium()
+    show_locked_tab()
 
-# ----- BIGGEST GAINS (premium) -----
+# 7) BIGGEST GAINS (locked)
 with tab_gains:
-    require_premium()
+    show_locked_tab()
 
-# ----- PROGRAMS (premium) -----
+# 8) PROGRAMS (locked)
 with tab_programs:
-    require_premium()
+    show_locked_tab()
 
-# ----- SETTINGS (free) -----
+# 9) SETTINGS (free)
 with tab_settings:
-    st.write("You can adjust R-range offsets here in the free version.")
-    min_off = st.number_input("R offset (min)", value=-2.0, step=0.5)
-    max_off = st.number_input("R offset (max)", value=2.0, step=0.5)
-    st.caption("Pro could save histories and scenarios.")
+    st.subheader("R-range settings (free)")
+    r_min = st.number_input("R offset (min)", value=-2.0, step=0.5)
+    r_max = st.number_input("R offset (max)", value=2.0, step=0.5)
+    st.caption("These don’t change the per-course formula (35 + 5×Z), but in Pro you could use them for ranges.")
