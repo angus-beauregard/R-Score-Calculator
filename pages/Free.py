@@ -34,19 +34,24 @@ st.markdown(
         font-size: .9rem;
     }
     .upgrade-btn {
-        background: #ffffff;
-        border: 1px solid rgba(99,102,241,0.35);
-        border-radius: 9999px;
-        padding: .45rem 1.1rem .5rem 1.1rem;
-        color: #4F46E5;
-        font-weight: 600;
-        text-decoration: none;
-        white-space: nowrap;
-        transition: all .12s ease-in-out;
-    }
-    .upgrade-btn:hover {
-        background: #4F46E5;
-        color: #ffffff;
+    background: #ffffff;
+    border: 1.5px solid rgba(99,102,241,0.4);
+    border-radius: 9999px;
+    padding: 0.45rem 1.2rem 0.5rem 1.2rem;
+    color: #4F46E5;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none !important;   /* removes underline */
+    white-space: nowrap;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.05);
+    transition: all 0.15s ease-in-out;
+}
+.upgrade-btn:hover {
+    background: #4F46E5;
+    color: #ffffff !important;
+    transform: scale(1.03);
+    box-shadow: 0 6px 12px rgba(99,102,241,0.25);
+}
     }
     /* inline upgrade link for locked tabs */
     .inline-upgrade {
