@@ -5,6 +5,11 @@ import streamlit as st
 import streamlit.components.v1 as components
 import plotly.express as px
 import shutil
+st.set_page_config(page_title="RScore Main", page_icon="📊")
+
+st.title("RScore Dashboard")
+st.write("Welcome to the main R-Score calculator page.")
+st.page_link("landing.py", label="← Back to Landing", icon="🏠")
 # --- Ensure Tesseract finds its language data ---
 # Check common tessdata directories across macOS and Linux
 for td in (
