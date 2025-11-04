@@ -131,7 +131,7 @@ def show_landing():
 
     <div class="hero-title">Your R-Score, in detail.</div>
         <div class="hero-sub">
-            Import Omnivox screenshots, autofill credits, see admission ranges, and track scenarios.<br>
+            Import Omnivox screenshots, autofill credits, see potential university admissions, and track scenarios.<br>
             Manual entry stays free.
         </div>
     <div class="hero-badges">
@@ -143,7 +143,7 @@ def show_landing():
     <div class="features">
             <a href="/Main" target="_self" class="feat-card">
     <div class="feat-title">Free Tools</div>
-                <p>Manual entry<br>R-score calculation<br>Min/max settings</p>
+                <p>Manual entry<br>R-score calculation</p>
             </a>
             <a href="/Main" target="_self" class="feat-card pro-card">
     <div class="feat-title">Pro</div>
