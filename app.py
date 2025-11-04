@@ -1378,9 +1378,11 @@ st.markdown(
     '<div class="glass-card"><h2 style="margin-bottom:0.2rem;">R-Score Dashboard</h2></div>',
     unsafe_allow_html=True
 )
-st.markdown("""
-<span style="background-color:#FACC15;color:black;padding:3px 6px;border-radius:6px;font-size:0.8em;">Premium</span>
-""", unsafe_allow_html=True)
+def require_premium():
+    if not st.session_state.get("is_premium", False):
+        st.markdown("### 🔒 Premium feature")
+        st.write("You unlocked only the free tools. To use this section, click **Unlock Pro (mock)** on the landing page.")
+        st.stop()
 # ================== TABS ==================
 # Add Help/Explanation first; Settings last
 explain_tab, manual_tab, csv_tab, import_tab, tab3, tab4, tab5, tab6, settings_tab = st.tabs([
@@ -1509,6 +1511,8 @@ with manual_tab:
         # force the script to re-run so Results tab uses the new df
         st.rerun()
 # ---------- CSV TAB ----------
+with import_tab:
+    require_premium()
 with csv_tab:
     st.write("Upload a CSV. We'll try to auto-detect columns.")
 
@@ -1569,6 +1573,8 @@ with csv_tab:
             st.error(f"CSV error: {e}")
 
 # ---------- IMPORT TAB (Photo OCR only) ----------
+with import_tab:
+    require_premium()
 with import_tab:
     st.markdown("### 📸 Import from Omnivox screenshots")
 
@@ -1836,6 +1842,8 @@ with tab3:
 
 
 # ---------- TAB 4 (Importance) ----------
+with import_tab:
+    require_premium()
 with tab4:
     st.markdown(
     "**What does 'Importance' mean?** It estimates how much your overall R-score reacts to improving a specific course. "
@@ -1877,6 +1885,8 @@ with tab4:
         st.plotly_chart(fig, use_container_width=True)
 
 # ---------- TAB 5 (Biggest gains) ----------
+with import_tab:
+    require_premium()
 with tab5:
     st.subheader("🏆 Biggest Potential R-Score Gains")
 
@@ -2005,6 +2015,8 @@ with tab5:
             st.markdown('</div>', unsafe_allow_html=True)
 
 # ---------- TAB 6 (Programs) ----------
+with import_tab:
+    require_premium()
 with tab6:
     st.markdown('<div class="glass-toolbar">', unsafe_allow_html=True)
     uni_df = load_uni_csv()
