@@ -77,7 +77,7 @@ st.markdown("""
 
     <!-- PRO: force login/subscription -->
     <a href="?mode=login" class="feat-card pro-card">
-        <div class="feat-title">Pro (OCR, CSV)</div>
+<div class="feat-title">Pro (OCR, CSV)</div>
         <p>Upload screenshots<br>CSV import<br>Program comparisons</p>
     </a>
 
