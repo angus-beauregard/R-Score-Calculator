@@ -1469,29 +1469,43 @@ with explain_tab:
 with manual_tab:
     st.write("Enter or edit your courses below.")
 
-    df_display = ensure_columns(st.session_state.df.copy())
-    # Autofill missing credits using mapping
-    df_display = autofill_credits_df(df_display)
-    # Show only the 5 core columns in the editor (hide the debug "Credits Source")
-    df_display = df_display[REQUIRED_COLS]
-    if "Course Name" in df_display.columns:
-        df_display["Course Name"] = df_display["Course Name"].astype(str).fillna("")
+    # make sure the session df exists
+    if "df" not in st.session_state:
+        st.session_state.df = pd.DataFrame(columns=REQUIRED_COLS)
+
+    # work on a copy of what's in session
+    df_manual = st.session_state.df.copy()
+
+    # show only the 5 main columns
+    df_manual = ensure_columns(df_manual)[REQUIRED_COLS]
+
+    # make sure Course Name is string
+    df_manual["Course Name"] = df_manual["Course Name"].astype(str).fillna("")
 
     edited_df = st.data_editor(
-        df_display,
+        df_manual,
         num_rows="dynamic",
         use_container_width=True,
         hide_index=True,
-        key=f"manual_editor_{st.session_state.get('manual_editor_version', 0)}",
-        disabled=False,
+        key="manual_editor",   # stable key – no version flipping
         column_config={
             "Course Name": st.column_config.TextColumn("Course Name"),
-            "Your Grade": st.column_config.NumberColumn("Your Grade", min_value=0.0, max_value=100.0, step=0.01, format="%.2f", help="Your final grade (0–100)"),
-            "Class Avg":  st.column_config.NumberColumn("Class Avg",  min_value=0.0, max_value=100.0, step=0.01, format="%.2f"),
-            "Std. Dev":   st.column_config.NumberColumn("Std. Dev",   min_value=0.0, max_value=50.0,  step=0.01, format="%.2f"),
-            "Credits":    st.column_config.NumberColumn("Credits",    min_value=0.0, max_value=10.0,  step=0.01, format="%.2f"),
-        }
+            "Your Grade": st.column_config.NumberColumn(
+                "Your Grade", min_value=0.0, max_value=100.0, step=0.01, format="%.2f"
+            ),
+            "Class Avg": st.column_config.NumberColumn(
+                "Class Avg", min_value=0.0, max_value=100.0, step=0.01, format="%.2f"
+            ),
+            "Std. Dev": st.column_config.NumberColumn(
+                "Std. Dev", min_value=0.0, max_value=50.0, step=0.01, format="%.2f"
+            ),
+            "Credits": st.column_config.NumberColumn(
+                "Credits", min_value=0.0, max_value=10.0, step=0.01, format="%.2f"
+            ),
+        },
     )
+
+    # only overwrite session when user actually edited
     st.session_state.df = ensure_columns(edited_df.copy())
 
 # ---------- CSV TAB ----------
