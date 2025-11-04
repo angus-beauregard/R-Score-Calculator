@@ -17,19 +17,33 @@ for td in (
         os.environ.setdefault("TESSDATA_PREFIX", td)
         print(f"[INFO] Tesseract data found at: {td}")
         break
-else:
-    print("[WARNING] No valid TESSDATA_PREFIX found — OCR may fail.")
 try:
     import pytesseract  # type: ignore
-    # Common Homebrew locations
-    cand = ["/opt/homebrew/bin/tesseract", "/usr/local/bin/tesseract", shutil.which("tesseract")]
-    cand = [p for p in cand if p]
-    if cand:
-        pytesseract.pytesseract.tesseract_cmd = cand[0]
-    # TESSDATA (language models). Set if you installed extra languages (e.g. FRA).
-    for td in ("/opt/homebrew/share/tessdata", "/usr/local/share/tessdata"):
-        if os.path.isdir(td):
-            os.environ.setdefault("TESSDATA_PREFIX", td)
+    # Prefer PATH first, then common Linux, then macOS:
+    candidates = [
+        shutil.which("tesseract"),
+        "/usr/bin/tesseract",
+        "/usr/local/bin/tesseract",
+        "/opt/homebrew/bin/tesseract",          # macOS (Apple Silicon)
+        "C:\\Program Files\\Tesseract-OCR\\tesseract.exe",  # Windows (optional)
+    ]
+    for p in candidates:
+        if p and os.path.isfile(p):
+            pytesseract.pytesseract.tesseract_cmd = p
+            break
+
+    # Find tessdata (language models) – Linux, then others:
+    td_candidates = [
+        os.environ.get("TESSDATA_PREFIX"),
+        "/usr/share/tesseract-ocr/5/tessdata",
+        "/usr/share/tesseract-ocr/4.00/tessdata",
+        "/usr/share/tesseract-ocr/tessdata",
+        "/usr/local/share/tessdata",
+        "/opt/homebrew/share/tessdata",
+    ]
+    for td in td_candidates:
+        if td and os.path.isdir(td):
+            os.environ["TESSDATA_PREFIX"] = td
             break
 except Exception:
     pass
