@@ -916,7 +916,7 @@ except Exception:
     pass
 
 # ================== PAGE & THEME ==================
-st.set_page_config(page_title="R-Score Dashboard", layout="wide")
+
 
 st.markdown("""
 <style>
