@@ -121,4 +121,4 @@ with tab_programs:
 
 # 9) SETTINGS (free)
 with tab_settings:
-    locked_tab()
+    show_locked_tab()
