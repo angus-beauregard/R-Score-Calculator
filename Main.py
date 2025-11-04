@@ -26,38 +26,44 @@ AUTH_HEADERS = {
     "Content-Type": "application/json",
 }
 
-st.title("Sign in to RScoreCalc")
+def show_login():
+    st.title("Sign in to RScoreCalc")
 
-email = st.text_input("Email")
-password = st.text_input("Password", type="password")
+    email = st.text_input("Email")
+    password = st.text_input("Password", type="password")
 
-col1, col2 = st.columns(2)
+    c1, c2 = st.columns(2)
 
-# --- sign in ---
-with col1:
-    if st.button("Sign in"):
-        url = f"{SUPABASE_URL}/auth/v1/token?grant_type=password"
-        payload = {"email": email, "password": password}
-        r = requests.post(url, json=payload, headers=auth_headers)
-        if r.status_code == 200:
-            data = r.json()
-            # data has access_token, token_type, user, etc.
-            st.session_state["auth"] = data
-            st.success("Logged in")
-            st.rerun()
-        else:
-            st.error(f"Login failed: {r.text}")
+    # sign in
+    with c1:
+        if st.button("Sign in"):
+            url = f"{SUPABASE_URL}/auth/v1/token?grant_type=password"
+            payload = {"email": email, "password": password}
+            r = requests.post(url, json=payload, headers=AUTH_HEADERS)
+            if r.status_code == 200:
+                data = r.json()
+                st.session_state["auth"] = data
+                st.success("Logged in.")
+                st.rerun()
+            else:
+                st.error(f"Login failed: {r.text}")
 
-# --- sign up ---
-with col2:
-    if st.button("Create account"):
-        url = f"{SUPABASE_URL}/auth/v1/signup"
-        payload = {"email": email, "password": password}
-        r = requests.post(url, json=payload, headers=auth_headers)
-        if r.status_code in (200, 201):
-            st.success("Account created. Check your email to confirm.")
-        else:
-            st.error(f"Signup failed: {r.text}")
+    # sign up
+    with c2:
+        if st.button("Create account"):
+            url = f"{SUPABASE_URL}/auth/v1/signup"
+            payload = {"email": email, "password": password}
+            r = requests.post(url, json=payload, headers=AUTH_HEADERS)
+            if r.status_code in (200, 201):
+                st.success("Account created. Check your email to confirm.")
+            else:
+                st.error(f"Signup failed: {r.text}")
+
+
+# if not logged in -> show login and stop
+if "auth" not in st.session_state:
+    show_login()
+    st.stop()
 
 auth = st.session_state.get("auth")
 access_token = auth["access_token"]
