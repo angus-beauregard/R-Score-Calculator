@@ -1379,9 +1379,7 @@ if "r_offset_max" not in st.session_state:
     st.session_state.r_offset_max =  2.0
 
 # ================== HEADER ==================
-st.markdown(
-    '<div class="glass-card"><h2 style="margin-bottom:0.2rem;">R-Score Dashboard</h2></div>',
-    unsafe_allow_html=True
+
 )
 def require_premium():
     if not st.session_state.get("is_premium", False):
