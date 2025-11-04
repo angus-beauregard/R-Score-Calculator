@@ -129,7 +129,7 @@ def show_landing():
             </div>
         </div>
 
-    <div class="hero-title">Your R-Score, cleaned up.</div>
+    <div class="hero-title">Your R-Score, in detail.</div>
         <div class="hero-sub">
             Import Omnivox screenshots, autofill credits, see admission ranges, and track scenarios.<br>
             Manual entry stays free.
