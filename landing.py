@@ -46,19 +46,39 @@ def show_landing():
     margin-top: 2.5rem;
     display: grid;
     gap: 1rem;
-    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 }
 .feat-card {
-    background: rgba(255,255,255,0.55);
-    border: 1px solid rgba(255,255,255,0.55);
+    background: rgba(255,255,255,0.65);
+    border: 1px solid rgba(0,0,0,0.05);
     border-radius: 1.1rem;
-    padding: 1rem;
+    padding: 1.2rem;
     text-align: left;
     box-shadow: 0 10px 30px rgba(15,23,42,0.04);
 }
 .feat-title {
     font-weight: 600;
     margin-bottom: .25rem;
+}
+.feat-button {
+    display: block;
+    margin-top: .8rem;
+    text-align: center;
+    padding: .6rem 1rem;
+    border-radius: .75rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+}
+.btn-primary {
+    background: linear-gradient(135deg, #4F46E5 0%, #6366F1 100%);
+    color: white;
+    border: none;
+}
+.btn-secondary {
+    background: white;
+    border: 1px solid rgba(15,23,42,0.08);
+    color: #111827;
 }
 .footer-mini {
     margin-top: 2.5rem;
@@ -75,7 +95,7 @@ def show_landing():
     </div>
   </div>
   <div class="hero-title">Your R-Score, cleaned up.</div>
-  <div class="hero-sub">Import grades using screenshots, autofill credits, see admission ranges, and track scenarios. </div>
+  <div class="hero-sub">Import Omnivox screenshots, autofill credits, see admission ranges, and track scenarios. Manual entry stays free.</div>
 
   <div class="hero-badges">
     <div class="hero-badge">✓ No Omnivox password stored</div>
@@ -85,16 +105,18 @@ def show_landing():
 
   <div class="feature-grid">
     <div class="feat-card">
-      <div class="feat-title">Free</div>
+      <div class="feat-title">Free Tools</div>
       <div>• Manual course entry<br>• R-score calculation<br>• Settings for min / max</div>
     </div>
+
     <div class="feat-card">
-      <div class="feat-title">Pro (mock)</div>
-      <div>• OCR Import from screenshots<br>• Autofill credits<br>• Program acceptance predictions</div>
+      <div class="feat-title">Pro (Mock)</div>
+      <div>• OCR import from screenshots<br>• Autofill credits<br>• Program comparisons</div>
     </div>
+
     <div class="feat-card">
       <div class="feat-title">Why trust it?</div>
-      <div>Runs in your browser, no Omnivox credentials, formula shown.</div>
+      <div>Runs fully in your browser — no Omnivox credentials, formula transparent.</div>
     </div>
   </div>
 
@@ -104,14 +126,15 @@ def show_landing():
 </div>
 """, unsafe_allow_html=True)
 
-    colA, colB = st.columns(2)
-    with colA:
-        if st.button("🚀 Unlock Pro (mock)"):
-            st.session_state.is_premium = True
+    # Embed buttons under their corresponding cards
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("➡️ Continue with free tools"):
             st.session_state.onboarded = True
             st.rerun()
-    with colB:
-        if st.button("➡️ Continue with free tools"):
+    with col2:
+        if st.button("🚀 Unlock Pro (mock)"):
+            st.session_state.is_premium = True
             st.session_state.onboarded = True
             st.rerun()
 
