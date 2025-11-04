@@ -116,7 +116,7 @@ def show_landing():
                 <p>Manual entry<br>R-score calculation<br>Min/max settings</p>
             </a>
             <a href="/Main" target="_self" class="feat-card pro-card">
-    <div class="feat-title">Pro (Mock)</div>
+    <div class="feat-title">Pro</div>
                 <p>OCR import<br>Autofill credits<br>Program comparisons</p>
             </a>
     <div class="feat-card" style="cursor:default;">
