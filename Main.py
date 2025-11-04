@@ -1555,26 +1555,25 @@ with csv_tab:
                 elif "credit" in c_lower or c_lower == "cr":
                     rename_map[c] = "Credits"
             df_up = df_up.rename(columns=rename_map)
-            for col in REQUIRED_COLS:
+            for col in ["Course Name", "Your Grade", "Class Avg", "Std. Dev", "Credits"]:
                 if col not in df_up.columns:
                     df_up[col] = np.nan
-            df_up = df_up[REQUIRED_COLS]
-            df_up = clean_numeric(df_up, ["Your Grade", "Class Avg", "Std. Dev", "Credits"])
-            df_up["Credits"] = df_up["Credits"].fillna(1)
-            df_up.loc[df_up["Credits"] == 0, "Credits"] = 1
-            # Try to autofill Credits from mapping (by code/name)
-            df_up = autofill_credits_df(df_up)
+            # numeric cleanup
             df_up["Credits"] = pd.to_numeric(df_up["Credits"], errors="coerce").fillna(1)
             df_up.loc[df_up["Credits"] == 0, "Credits"] = 1
+
+            # ✅ 1) drop the manual editor widget state if it exists
+            if "manual_editor" in st.session_state:
+                del st.session_state["manual_editor"]
+
+            # ✅ 2) store the new data
             st.session_state.df = df_up
+
             st.success(f"Loaded {len(df_up)} rows from CSV.")
 
-            # NEW: make the manual editor show the fresh CSV right away
-            st.session_state["manual_editor"] = st.session_state.df.copy()
-
-            # keep your version bump
-            st.session_state.manual_editor_version = st.session_state.get("manual_editor_version", 0) + 1
+            # ✅ 3) force a rerun so the Manual tab re-renders with new data
             st.rerun()
+
         except Exception as e:
             st.error(f"CSV error: {e}")
 
