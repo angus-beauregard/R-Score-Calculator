@@ -66,8 +66,6 @@ st.markdown(
         font-weight: 500;
     }
     # --- REMOVE SIDEBAR + 3-DOT MENU + HEADER ---
-st.markdown("""
-<style>
 /* Hide hamburger menu, Streamlit header, and footer */
 #MainMenu {visibility: hidden;}
 header {visibility: hidden;}
