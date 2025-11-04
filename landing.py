@@ -120,6 +120,23 @@ def show_landing():
             font-size: .75rem;
             color: #9ca3af;
         }
+        /* Hide hamburger menu, Streamlit header, and footer */
+#MainMenu {visibility: hidden;}
+header {visibility: hidden;}
+footer {visibility: hidden;}
+
+/* Hide sidebar */
+[data-testid="stSidebar"] {
+    display: none;
+}
+
+/* Expand content to full width */
+.block-container {
+    padding-top: 1rem;
+    padding-left: 3rem;
+    padding-right: 3rem;
+    max-width: 100%;
+}
         </style>
 
     <div class="hero-wrap">
