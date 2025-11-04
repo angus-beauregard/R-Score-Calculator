@@ -18,8 +18,12 @@ st.set_page_config(page_title="R-Score Dashboard", layout="wide")
 # -------------------------------------------------
 # Supabase creds from Streamlit secrets
 # -------------------------------------------------
-SUPABASE_URL = st.secrets["SUPABASE_URL"]
-SUPABASE_KEY = st.secrets["SUPABASE_ANON_KEY"]
+SUPABASE_URL = st.secrets.get("SUPABASE_URL")
+SUPABASE_KEY = st.secrets.get("SUPABASE_ANON_KEY")
+
+if not SUPABASE_URL or not SUPABASE_KEY:
+    st.error("Supabase credentials are missing. Add SUPABASE_URL and SUPABASE_ANON_KEY to Streamlit secrets.")
+    st.stop()
 
 AUTH_HEADERS = {
     "apikey": SUPABASE_KEY,
