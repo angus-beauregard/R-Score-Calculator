@@ -42,6 +42,7 @@ def show_landing():
         display: flex;
         flex-direction: column;
         justify-content: center;
+        align-items: center;
         text-decoration: none !important;
         background: white;
         border: 2px solid #e5e7eb;
@@ -50,7 +51,7 @@ def show_landing():
         height: 210px;
         box-shadow: 0 5px 15px rgba(0,0,0,0.05);
         transition: all .15s ease-in-out;
-        text-align: left;
+        text-align: center;
     }
     .card-link:hover {
         transform: scale(1.03);
@@ -68,6 +69,18 @@ def show_landing():
         font-size: .95rem;
         margin: 0;
     }
+    /* PRO CARD special styling */
+    .pro-card {
+        background: linear-gradient(135deg, #4F46E5 0%, #6366F1 100%);
+        color: white;
+        border: none;
+        box-shadow: 0 10px 25px rgba(99,102,241,0.25);
+    }
+    .pro-card h3, .pro-card p { color: white; }
+    .pro-card:hover {
+        transform: scale(1.05);
+        box-shadow: 0 15px 35px rgba(79,70,229,0.4);
+    }
     .footer-mini {
         margin-top: 2.5rem;
         text-align:center;
@@ -75,11 +88,8 @@ def show_landing():
         color:#9ca3af;
     }
     </style>
-    """, unsafe_allow_html=True)
 
-    # --- Equal sized cards (both link to same page) ---
-    col1, col2, col3 = st.columns(3)
-<div class="hero-wrap">
+    <div class="hero-wrap">
         <div style="display:flex;justify-content:center;margin-bottom:1rem;">
             <div style="background:rgba(99,102,241,.12);padding:.35rem .75rem;border-radius:9999px;font-size:.7rem;color:#4f46e5;">
                 RScore Pro • Quebec CEGEP R-score helper
@@ -93,13 +103,18 @@ def show_landing():
             <div class="hero-badge">✓ Uses standard 35 + 5 × Z</div>
             <div class="hero-badge">✓ Built for JAC students</div>
         </div>
-</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # --- Equal sized, centered cards ---
+    col1, col2, col3 = st.columns(3)
+
     with col1:
         st.markdown(
             """
             <a href="/Main" target="_self" class="card-link">
                 <h3>Free Tools</h3>
-                <p>Manual entry, R-score calculation, and min/max settings.</p>
+                <p>Manual entry<br>R-score calculation<br>Min/max settings</p>
             </a>
             """,
             unsafe_allow_html=True,
@@ -108,9 +123,9 @@ def show_landing():
     with col2:
         st.markdown(
             """
-            <a href="/Main" target="_self" class="card-link" style="background:#eef2ff;border-color:#6366F1;">
+            <a href="/Main" target="_self" class="card-link pro-card">
                 <h3>Pro (Mock)</h3>
-                <p>OCR import, autofill credits, program comparisons.</p>
+                <p>OCR import<br>Autofill credits<br>Program comparisons</p>
             </a>
             """,
             unsafe_allow_html=True,
