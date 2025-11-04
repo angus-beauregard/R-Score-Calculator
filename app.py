@@ -1472,16 +1472,10 @@ with manual_tab:
     df_display = ensure_columns(st.session_state.df.copy())
     # Autofill missing credits using mapping
     df_display = autofill_credits_df(df_display)
+    # Show only the 5 core columns in the editor (hide the debug "Credits Source")
+df_display = df_display[REQUIRED_COLS]
     if "Course Name" in df_display.columns:
         df_display["Course Name"] = df_display["Course Name"].astype(str).fillna("")
-    # --- Ensure Manual editor reflects any changes from CSV/OCR imports ---
-    try:
-        _fp = df_display.to_csv(index=False)
-    except Exception:
-        _fp = str(df_display.shape)
-    if st.session_state.get("manual_df_fp") != _fp:
-        st.session_state["manual_df_fp"] = _fp
-        st.session_state["manual_editor_version"] = st.session_state.get("manual_editor_version", 0) + 1
 
     edited_df = st.data_editor(
         df_display,
@@ -1557,10 +1551,6 @@ with csv_tab:
             st.session_state.df = df_up
             st.success(f"Loaded {len(df_up)} rows from CSV.")
             st.session_state.manual_editor_version = st.session_state.get("manual_editor_version", 0) + 1
-            try:
-                st.rerun()
-            except Exception:
-                st.experimental_rerun()
         except Exception as e:
             st.error(f"CSV error: {e}")
 
