@@ -5,11 +5,6 @@ import streamlit as st
 import streamlit.components.v1 as components
 import plotly.express as px
 import shutil
-st.set_page_config(page_title="RScore Main", page_icon="📊")
-
-st.title("RScore Dashboard")
-st.write("Welcome to the main R-Score calculator page.")
-st.page_link("landing.py", label="← Back to Landing", icon="🏠")
 # --- Ensure Tesseract finds its language data ---
 # Check common tessdata directories across macOS and Linux
 for td in (
@@ -109,7 +104,7 @@ NAV_JUNK_PREFIXES = tuple([
     "assignments", "calendar", "class forum", "course documents", "grades",
     "list of my absences", "online classes", "recommended websites",
     "teachers info", "my services", "team forums", "current average",
-    "omnivox", "léa", "john abbott college"
+    "omnivox", "léa", "angus beauregard", "john abbott college"
 ])
 def _clean_course_name(name: str) -> str:
     if not name:
@@ -251,7 +246,7 @@ def _parse_omnivox_text(text: str) -> List[Dict[str, Any]]:
         t = (s or "").strip().lower()
         if not t:
             return True
-        if any(k in t for k in ("omnivox", "john abbott college", )):
+        if any(k in t for k in ("omnivox", "john abbott college", "angus beauregard")):
             return True
         if any(t.startswith(p) for p in NAV_JUNK_PREFIXES):
             return True
@@ -916,7 +911,7 @@ except Exception:
     pass
 
 # ================== PAGE & THEME ==================
-
+st.set_page_config(page_title="R-Score Dashboard", layout="wide")
 
 st.markdown("""
 <style>
@@ -1379,7 +1374,10 @@ if "r_offset_max" not in st.session_state:
     st.session_state.r_offset_max =  2.0
 
 # ================== HEADER ==================
-
+st.markdown(
+    '<div class="glass-card"><h2 style="margin-bottom:0.2rem;">R-Score Dashboard</h2></div>',
+    unsafe_allow_html=True
+)
 def require_premium():
     if not st.session_state.get("is_premium", False):
         st.markdown("### 🔒 Premium feature")
@@ -1471,9 +1469,6 @@ with explain_tab:
     )
 
 # ---------- MANUAL TAB ----------
-if "manual_editor_version" not in st.session_state:
-    st.session_state.manual_editor_version = 0
-
 with manual_tab:
     st.write("Enter or edit your courses below. Click 'Confirm Changes' when done.")
 
@@ -1491,14 +1486,23 @@ with manual_tab:
         num_rows="dynamic",
         use_container_width=True,
         hide_index=True,
-        # 👇 dynamic key: editor_0, editor_1, editor_2...
-        key=f"manual_editor_{st.session_state.manual_editor_version}",
+        key="manual_editor",
         column_config={
             "Course Name": st.column_config.TextColumn("Course Name"),
-            "Your Grade": st.column_config.NumberColumn("Your Grade", min_value=0.0, max_value=100.0, step=0.01, format="%.2f"),
-            "Class Avg": st.column_config.NumberColumn("Class Avg", min_value=0.0, max_value=100.0, step=0.01, format="%.2f"),
-            "Std. Dev": st.column_config.NumberColumn("Std. Dev", min_value=0.0, max_value=50.0, step=0.01, format="%.2f"),
-            "Credits": st.column_config.NumberColumn("Credits", min_value=0.0, max_value=10.0, step=0.01, format="%.2f"),
+            "Your Grade": st.column_config.NumberColumn(
+                "Your Grade", min_value=0.0, max_value=100.0, step=0.01, format="%.2f"
+            ),
+            "Class Avg": st.column_config.NumberColumn(
+                "Class Avg", min_value=0.0, max_value=100.0, step=0.01, format="%.2f"
+            ),
+            "Std. Dev": st.column_config.NumberColumn(
+                "Std. Dev", min_value=0.0, max_value=50.0, step=0.01, format="%.2f"
+            ),
+            "Credits": st.column_config.NumberColumn(
+                "Credits", min_value=0.0, max_value=10.0, step=0.01, format="%.2f"
+            ),
+        },
+    )
 
     if st.button("✅ Confirm Changes"):
         # save to session
@@ -1507,6 +1511,8 @@ with manual_tab:
         # force the script to re-run so Results tab uses the new df
         st.rerun()
 # ---------- CSV TAB ----------
+with import_tab:
+    require_premium()
 with csv_tab:
     st.write("Upload a CSV. We'll try to auto-detect columns.")
 
@@ -1531,48 +1537,44 @@ with csv_tab:
         """
     )
 
-up = st.file_uploader("Upload CSV", type=["csv"], key="csv_up")
-if up is not None:
-    try:
-        df_up = pd.read_csv(up, encoding="utf-8-sig", engine="python")
-
-        # map / normalize columns like before
-        rename_map = {}
-        for c in df_up.columns:
-            c_lower = c.strip().lower().replace(".", "").replace("_", "").replace(" ", "")
-            if "coursename" in c_lower or c_lower in ("course","classname","name"):
-                rename_map[c] = "Course Name"
-            elif "grade" in c_lower or "mark" in c_lower or "note" in c_lower:
-                rename_map[c] = "Your Grade"
-            elif "avg" in c_lower or "average" in c_lower or "mean" in c_lower:
-                rename_map[c] = "Class Avg"
-            elif "std" in c_lower or "deviation" in c_lower or "sigma" in c_lower:
-                rename_map[c] = "Std. Dev"
-            elif "credit" in c_lower or c_lower == "cr":
-                rename_map[c] = "Credits"
-
-        df_up = df_up.rename(columns=rename_map)
-
-        # make sure all required columns exist
-        required_cols = ["Course Name", "Your Grade", "Class Avg", "Std. Dev", "Credits"]
-        for col in required_cols:
-            if col not in df_up.columns:
-                df_up[col] = np.nan
-
-        # basic cleaning
-        for col in ["Your Grade", "Class Avg", "Std. Dev", "Credits"]:
-            df_up[col] = pd.to_numeric(df_up[col], errors="coerce")
-        df_up["Credits"] = df_up["Credits"].fillna(1)
-        df_up.loc[df_up["Credits"] == 0, "Credits"] = 1
-
-        # ✅ only update the main DF — do NOT touch manual_editor
-        st.session_state.df = df_up
-
-        st.success(f"Loaded {len(df_up)} rows from CSV.")
-    except Exception as e:
-        st.error(f"CSV error: {e}")
+    up = st.file_uploader("Upload CSV", type=["csv"], key="csv_up")
+    if up is not None:
+        try:
+            df_up = pd.read_csv(up, encoding="utf-8-sig", engine="python")
+            rename_map = {}
+            for c in df_up.columns:
+                c_lower = c.strip().lower().replace(".", "").replace("_", "").replace(" ", "")
+                if "coursename" in c_lower or c_lower in ("course","classname","name"):
+                    rename_map[c] = "Course Name"
+                elif "grade" in c_lower or "mark" in c_lower or "note" in c_lower:
+                    rename_map[c] = "Your Grade"
+                elif "avg" in c_lower or "average" in c_lower or "mean" in c_lower:
+                    rename_map[c] = "Class Avg"
+                elif "std" in c_lower or "deviation" in c_lower or "sigma" in c_lower:
+                    rename_map[c] = "Std. Dev"
+                elif "credit" in c_lower or c_lower == "cr":
+                    rename_map[c] = "Credits"
+            df_up = df_up.rename(columns=rename_map)
+            for col in REQUIRED_COLS:
+                if col not in df_up.columns:
+                    df_up[col] = np.nan
+            df_up = df_up[REQUIRED_COLS]
+            df_up = clean_numeric(df_up, ["Your Grade", "Class Avg", "Std. Dev", "Credits"])
+            df_up["Credits"] = df_up["Credits"].fillna(1)
+            df_up.loc[df_up["Credits"] == 0, "Credits"] = 1
+            # Try to autofill Credits from mapping (by code/name)
+            df_up = autofill_credits_df(df_up)
+            df_up["Credits"] = pd.to_numeric(df_up["Credits"], errors="coerce").fillna(1)
+            df_up.loc[df_up["Credits"] == 0, "Credits"] = 1
+            st.session_state.df = df_up
+            st.success(f"Loaded {len(df_up)} rows from CSV.")
+            st.session_state.manual_editor_version = st.session_state.get("manual_editor_version", 0) + 1
+        except Exception as e:
+            st.error(f"CSV error: {e}")
 
 # ---------- IMPORT TAB (Photo OCR only) ----------
+with import_tab:
+    require_premium()
 with import_tab:
     st.markdown("### 📸 Import from Omnivox screenshots")
 
@@ -1840,6 +1842,8 @@ with tab3:
 
 
 # ---------- TAB 4 (Importance) ----------
+with import_tab:
+    require_premium()
 with tab4:
     st.markdown(
     "**What does 'Importance' mean?** It estimates how much your overall R-score reacts to improving a specific course. "
@@ -1881,6 +1885,8 @@ with tab4:
         st.plotly_chart(fig, use_container_width=True)
 
 # ---------- TAB 5 (Biggest gains) ----------
+with import_tab:
+    require_premium()
 with tab5:
     st.subheader("🏆 Biggest Potential R-Score Gains")
 
@@ -2009,6 +2015,8 @@ with tab5:
             st.markdown('</div>', unsafe_allow_html=True)
 
 # ---------- TAB 6 (Programs) ----------
+with import_tab:
+    require_premium()
 with tab6:
     st.markdown('<div class="glass-toolbar">', unsafe_allow_html=True)
     uni_df = load_uni_csv()
@@ -2110,33 +2118,8 @@ with tab6:
 st.markdown("""
 <hr style="margin-top:40px;opacity:0.3">
 <div style="text-align:center; color:gray; font-size:0.9em;">
-RScore Pro © 2025<br>
+RScore Pro © 2025 • Built by Angus Beauregard<br>
 <a href="https://rscore.app/privacy" target="_blank">Privacy Policy</a> •
 <a href="https://rscore.app/terms" target="_blank">Terms of Service</a>
 </div>
 """, unsafe_allow_html=True)
-st.markdown(
-    """
-    <hr style="margin-top:2rem;margin-bottom:1rem;">
-    <p style="font-size:0.75rem;color:#94a3b8;">
-      RScore Dashboard is independent and not affiliated with John Abbott College or Omnivox.
-    </p>
-    """,
-    unsafe_allow_html=True,
-)
-
-with st.expander("Terms of Use"):
-    st.markdown(
-        """
-        This R-Score tool is for informational/educational use only. Results are estimates based on what you enter.
-        Do not enter Omnivox credentials. No warranty is given. You must follow your college’s IT/acceptable use policies.
-        """
-    )
-
-with st.expander("Privacy Policy"):
-    st.markdown(
-        """
-        We only process the grade data you upload in this session to compute an R-score. Do not upload personal identifiers.
-        If you deploy this publicly, make sure to update this text with your hosting/logging details.
-        """
-    )
