@@ -949,7 +949,41 @@ header, div[data-testid="stToolbar"] {
   padding: 1rem 1.25rem;
   box-shadow: 0 12px 30px rgba(0,0,0,0.3);
 }
+import streamlit as st
+from supabase import create_client, Client
 
+@st.cache_resource
+def get_supabase_client() -> Client:
+    url = st.secrets["SUPABASE_URL"]
+    key = st.secrets["SUPABASE_KEY"]
+    return create_client(url, key)
+
+supabase = get_supabase_client()
+
+def show_login():
+    st.title("Sign in to RScoreCalc")
+    email = st.text_input("Email")
+    password = st.text_input("Password", type="password")
+
+    if st.button("Sign in"):
+        try:
+            res = supabase.auth.sign_in_with_password({"email": email, "password": password})
+            user = res.user
+            if user:
+                st.session_state["user"] = user
+                # fetch profile
+                prof = supabase.table("profiles").select("*").eq("id", user.id).single().execute()
+                st.session_state["is_premium"] = prof.data.get("is_premium", False)
+                st.rerun()
+            else:
+                st.error("Login failed.")
+        except Exception as e:
+            st.error(f"Auth error: {e}")
+
+# gate
+if "user" not in st.session_state:
+    show_login()
+    st.stop()
 /* ===== tabs ===== */
 .stTabs [data-baseweb="tab-list"] {
   background: rgba(255,255,255,0.85);
