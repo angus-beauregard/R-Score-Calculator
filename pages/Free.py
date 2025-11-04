@@ -14,6 +14,17 @@ st.markdown(
     '<p style="color:#6b7280;margin-top:0;">Manual entry, basic R-score calculation, and settings.</p>',
     unsafe_allow_html=True
 )
+# ===== UPGRADE BAR AT THE TOP =====
+with st.container():
+    col1, col2 = st.columns([3, 1])
+    with col1:
+        st.info("You’re on the free version. CSV, OCR, importance, and programs are premium.")
+    with col2:
+        if st.button("✨ Upgrade to Premium", use_container_width=True):
+            # FUTURE: redirect to Stripe
+            st.session_state.is_premium = True
+            st.session_state.onboarded = True
+            st.switch_page("app.py")  # adjust to your main app filename
 
 tabs = st.tabs([
     "Help / Explanation",
