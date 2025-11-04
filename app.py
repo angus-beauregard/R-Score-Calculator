@@ -2116,10 +2116,10 @@ with tab6:
         # Only close toolbar div once
 
 st.markdown("""
-<hr style="margin-top:40px;opacity:0.3">
-<div style="text-align:center; color:gray; font-size:0.9em;">
-RScore Pro © 2025 • Built by Angus Beauregard<br>
-<a href="https://rscore.app/privacy" target="_blank">Privacy Policy</a> •
-<a href="https://rscore.app/terms" target="_blank">Terms of Service</a>
+<hr style="margin-top:3rem;opacity:0.2">
+<div style="text-align:center;font-size:0.8rem;color:#6b7280;margin-bottom:1.5rem;">
+RScore Pro is an educational tool and not an official admission calculator. <br>
+No Omnivox credentials are collected. R-score formula is shown in the app. <br>
+© 2025 RScore Pro
 </div>
 """, unsafe_allow_html=True)
