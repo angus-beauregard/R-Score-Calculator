@@ -1469,16 +1469,15 @@ with explain_tab:
 with manual_tab:
     st.write("Enter or edit your courses below. Click 'Confirm Changes' when done.")
 
-    # Make sure the session df exists
+    # make sure session df exists
     if "df" not in st.session_state:
         st.session_state.df = pd.DataFrame(columns=REQUIRED_COLS)
 
-    # Work on a copy of what's in session
+    # work on a copy
     df_manual = st.session_state.df.copy()
     df_manual = ensure_columns(df_manual)[REQUIRED_COLS]
     df_manual["Course Name"] = df_manual["Course Name"].astype(str).fillna("")
 
-    # Editable table
     edited_df = st.data_editor(
         df_manual,
         num_rows="dynamic",
@@ -1502,11 +1501,12 @@ with manual_tab:
         },
     )
 
-    # Add a confirmation button to explicitly save edits
     if st.button("✅ Confirm Changes"):
+        # save to session
         st.session_state.df = ensure_columns(edited_df.copy())
-        st.success("Changes saved successfully!")
-
+        st.success("Changes saved!")
+        # force the script to re-run so Results tab uses the new df
+        st.rerun()
 # ---------- CSV TAB ----------
 with csv_tab:
     st.write("Upload a CSV. We'll try to auto-detect columns.")
