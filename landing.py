@@ -75,7 +75,7 @@ def show_landing():
     </div>
   </div>
   <div class="hero-title">Your R-Score, cleaned up.</div>
-  <div class="hero-sub">Import Omnivox screenshots, autofill credits, see admission ranges, and track scenarios. Manual entry stays free.</div>
+  <div class="hero-sub">Import grades using screenshots, autofill credits, see admission ranges, and track scenarios. </div>
 
   <div class="hero-badges">
     <div class="hero-badge">✓ No Omnivox password stored</div>
@@ -90,7 +90,7 @@ def show_landing():
     </div>
     <div class="feat-card">
       <div class="feat-title">Pro (mock)</div>
-      <div>• OCR Import from screenshots<br>• Autofill credits<br>• Program comparisons</div>
+      <div>• OCR Import from screenshots<br>• Autofill credits<br>• Program acceptance predictions</div>
     </div>
     <div class="feat-card">
       <div class="feat-title">Why trust it?</div>
