@@ -89,7 +89,7 @@ def show_landing():
     }
     </style>
 
-    <div class="hero-wrap">
+    <div>
         <div style="display:flex;justify-content:center;margin-bottom:1rem;">
             <div style="background:rgba(99,102,241,.12);padding:.35rem .75rem;border-radius:9999px;font-size:.7rem;color:#4f46e5;">
                 RScore Pro • Quebec CEGEP R-score helper
