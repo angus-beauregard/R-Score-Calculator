@@ -83,6 +83,18 @@ params = {
 resp = requests.get(profiles_url, headers=headers_authed, params=params)
 rows = resp.json() if resp.ok else []
 
+def require_premium():
+    if not st.session_state.get("is_premium", False):
+        st.markdown("### 🔒 Premium feature")
+        st.write("This section is for premium accounts.")
+        st.markdown(
+            '<a href="#billing--upgrade" style="display:inline-block;margin-top:.5rem;'
+            'background:#4F46E5;color:#fff;padding:.35rem .9rem;border-radius:9999px;'
+            'text-decoration:none;">Upgrade to Premium</a>',
+            unsafe_allow_html=True,
+        )
+        st.stop()
+
 if rows:
     st.session_state["is_premium"] = bool(rows[0].get("is_premium", False))
 else:
@@ -104,12 +116,6 @@ if not st.session_state.tos_accepted:
         else:
             st.warning("Please check the box to agree.")
     st.stop()
-
-def require_premium():
-    if not st.session_state.get("is_premium", False):
-        st.markdown("### 🔒 Premium feature")
-        st.write("This section is for premium accounts.")
-        st.stop()
 # --- Ensure Tesseract finds its language data ---
 # Check common tessdata directories across macOS and Linux
 for td in (
@@ -1049,7 +1055,6 @@ def show_billing_tab():
 
     st.info("After your Stripe webhook marks this user premium in Supabase (profiles.is_premium = true), refresh this page and the locked tabs will open.")
 # ================== PAGE & THEME ==================
-st.set_page_config(page_title="R-Score Dashboard", layout="wide")
 
 st.markdown("""
 <style>
@@ -1694,8 +1699,8 @@ with csv_tab:
 # ---------- IMPORT TAB (Photo OCR only) ----------
 with import_tab:
     require_premium()
-with import_tab:
     st.markdown("### 📸 Import from Omnivox screenshots")
+    # ... rest of your OCR UI ...
 
     ocr_files = st.file_uploader(
         "Upload one or more screenshots (PNG/JPG). We'll parse Course + Code + Grade + Class average (+ Std. dev when present).",
