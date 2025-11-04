@@ -70,24 +70,21 @@ st.markdown("""
 
 <div class="features">
     <!-- FREE: go straight to free version -->
-        <a href="/free" target="_self" class="feat-card">
+    <a href="/free" target="_self" class="feat-card">
 <div class="feat-title">Free tools</div>
     <p>Manual entry<br>R-score calculation<br>Basic settings</p>
     </a>
-
     <!-- PRO: force login/subscription -->
     <a href="?mode=login" class="feat-card pro-card">
 <div class="feat-title">Pro (OCR, CSV)</div>
-        <p>Upload screenshots<br>CSV import<br>Program comparisons</p>
+    <p>Upload screenshots<br>CSV import<br>Program comparisons</p>
     </a>
-
     <!-- INFO -->
 <div class="feat-card" style="cursor:default;">
 <div class="feat-title">Why trust it?</div>
     <p>Runs in browser<br>No Omnivox credentials<br>Formula shown</p>
 </div>
 </div>
-
 <div class="footer-mini">
     RScoreCalc © 2025 • Not affiliated with John Abbott College or Omnivox.
 </div>
