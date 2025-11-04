@@ -1532,40 +1532,43 @@ with csv_tab:
     )
 
 up = st.file_uploader("Upload CSV", type=["csv"], key="csv_up")
-    if up is not None:
-        try:
-            df_up = pd.read_csv(up, encoding="utf-8-sig", engine="python")
-            rename_map = {}
-            for c in df_up.columns:
-                c_lower = c.strip().lower().replace(".", "").replace("_", "").replace(" ", "")
-                if "coursename" in c_lower or c_lower in ("course","classname","name"):
-                    rename_map[c] = "Course Name"
-                elif "grade" in c_lower or "mark" in c_lower or "note" in c_lower:
-                    rename_map[c] = "Your Grade"
-                elif "avg" in c_lower or "average" in c_lower or "mean" in c_lower:
-                    rename_map[c] = "Class Avg"
-                elif "std" in c_lower or "deviation" in c_lower or "sigma" in c_lower:
-                    rename_map[c] = "Std. Dev"
-                elif "credit" in c_lower or c_lower == "cr":
-                    rename_map[c] = "Credits"
-            df_up = df_up.rename(columns=rename_map)
-            for col in ["Course Name", "Your Grade", "Class Avg", "Std. Dev", "Credits"]:
-                if col not in df_up.columns:
-                    df_up[col] = np.nan
+if up is not None:
+    try:
+        df_up = pd.read_csv(up, encoding="utf-8-sig", engine="python")
 
-            # numeric cleanup
-            df_up["Credits"] = pd.to_numeric(df_up["Credits"], errors="coerce").fillna(1)
-            df_up.loc[df_up["Credits"] == 0, "Credits"] = 1
+        # map / normalize columns like before
+        rename_map = {}
+        for c in df_up.columns:
+            c_lower = c.strip().lower().replace(".", "").replace("_", "").replace(" ", "")
+            if "coursename" in c_lower or c_lower in ("course","classname","name"):
+                rename_map[c] = "Course Name"
+            elif "grade" in c_lower or "mark" in c_lower or "note" in c_lower:
+                rename_map[c] = "Your Grade"
+            elif "avg" in c_lower or "average" in c_lower or "mean" in c_lower:
+                rename_map[c] = "Class Avg"
+            elif "std" in c_lower or "deviation" in c_lower or "sigma" in c_lower:
+                rename_map[c] = "Std. Dev"
+            elif "credit" in c_lower or c_lower == "cr":
+                rename_map[c] = "Credits"
 
-            # store to session
-            st.session_state.df = df_up
+        df_up = df_up.rename(columns=rename_map)
 
-            # 👇 bump the editor version so the Manual tab re-renders with new data
-            st.session_state.manual_editor_version = st.session_state.get("manual_editor_version", 0) + 1
+        # make sure all required columns exist
+        required_cols = ["Course Name", "Your Grade", "Class Avg", "Std. Dev", "Credits"]
+        for col in required_cols:
+            if col not in df_up.columns:
+                df_up[col] = np.nan
 
-            st.success(f"Loaded {len(df_up)} rows from CSV.")
-            st.rerun()
+        # basic cleaning
+        for col in ["Your Grade", "Class Avg", "Std. Dev", "Credits"]:
+            df_up[col] = pd.to_numeric(df_up[col], errors="coerce")
+        df_up["Credits"] = df_up["Credits"].fillna(1)
+        df_up.loc[df_up["Credits"] == 0, "Credits"] = 1
 
+        # ✅ only update the main DF — do NOT touch manual_editor
+        st.session_state.df = df_up
+
+        st.success(f"Loaded {len(df_up)} rows from CSV.")
     except Exception as e:
         st.error(f"CSV error: {e}")
 
