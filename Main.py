@@ -25,7 +25,8 @@ AUTH_HEADERS = {
     "apikey": SUPABASE_KEY,
     "Content-Type": "application/json",
 }
-
+# optional Stripe publishable key (front-end only for now)
+STRIPE_PUBLISHABLE_KEY = st.secrets.get("STRIPE_PUBLISHABLE_KEY", "")
 def show_login():
     st.title("Sign in to RScoreCalc")
 
@@ -87,6 +88,9 @@ if rows:
 else:
     # user exists in auth but not in profiles — treat as free
     st.session_state["is_premium"] = False
+# if user is not premium, we can flag them to see billing right away
+if not st.session_state.get("is_premium", False):
+    st.session_state.setdefault("needs_billing", True)
 if "tos_accepted" not in st.session_state:
     st.session_state.tos_accepted = False
 
@@ -1010,7 +1014,40 @@ try:
 except Exception:
     # If anything above fails, we'll surface the error during the first OCR call
     pass
+def show_billing_tab():
+    st.subheader("Upgrade to Premium")
+    st.write("You're signed in. To unlock CSV, OCR import, and program comparisons, complete payment below.")
 
+    if not STRIPE_PUBLISHABLE_KEY:
+        st.warning("Stripe publishable key is not set in secrets. This is a front-end mock.")
+
+    # This is a front-end placeholder. In production:
+    # 1) Streamlit calls your backend to create a Checkout Session / PaymentIntent
+    # 2) backend returns the client_secret or checkout session id
+    # 3) you pass it into stripe.js below
+    checkout_html = f"""
+    <script src="https://js.stripe.com/v3/"></script>
+    <div id="checkout-mount" style="max-width:420px;margin-top:1rem;"></div>
+    <script>
+      const stripe = Stripe('{STRIPE_PUBLISHABLE_KEY}');
+      // placeholder button -- replace with real fetch to your backend
+      const btn = document.createElement('button');
+      btn.textContent = 'Pay $4.99 / month';
+      btn.style.background = '#4F46E5';
+      btn.style.color = 'white';
+      btn.style.border = 'none';
+      btn.style.borderRadius = '9999px';
+      btn.style.padding = '0.55rem 1.25rem';
+      btn.style.cursor = 'pointer';
+      btn.onclick = () => {{
+        alert('In production, this would call your backend to create a Stripe Checkout session and confirm payment.');
+      }};
+      document.getElementById('checkout-mount').appendChild(btn);
+    </script>
+    """
+    st.components.v1.html(checkout_html, height=240)
+
+    st.info("After your Stripe webhook marks this user premium in Supabase (profiles.is_premium = true), refresh this page and the locked tabs will open.")
 # ================== PAGE & THEME ==================
 st.set_page_config(page_title="R-Score Dashboard", layout="wide")
 
@@ -1478,14 +1515,9 @@ st.markdown(
     '<div class="glass-card"><h2 style="margin-bottom:0.2rem;">R-Score Dashboard</h2></div>',
     unsafe_allow_html=True
 )
-def require_premium():
-    if not st.session_state.get("is_premium", False):
-        st.markdown("### 🔒 Premium feature")
-        st.write("You unlocked only the free tools. To use this section, click **Unlock Pro (mock)** on the landing page.")
-        st.stop()
 # ================== TABS ==================
 # Add Help/Explanation first; Settings last
-explain_tab, manual_tab, csv_tab, import_tab, tab3, tab4, tab5, tab6, settings_tab = st.tabs([
+explain_tab, manual_tab, csv_tab, import_tab, tab3, tab4, tab5, tab6, settings_tab, billing_tab = st.tabs([
     "Help / Explanation",
     "Manual",
     "CSV",
@@ -1494,7 +1526,8 @@ explain_tab, manual_tab, csv_tab, import_tab, tab3, tab4, tab5, tab6, settings_t
     "Importance",
     "Biggest gains",
     "Programs",
-    "Settings"
+    "Settings",
+    "Billing / Upgrade",
 ])
 # ---------- EXPLANATION TAB ----------
 with explain_tab:
@@ -1870,6 +1903,8 @@ with settings_tab:
         )
 
     st.info("Not sure what to pick? Leave the defaults (−2.0 and +2.0). You can always adjust later.")
+with billing_tab:
+    show_billing_tab()
 # ---------- TAB 3 (Results) ----------
 with tab3:
     r_offset_min = float(st.session_state.get("r_offset_min", -2.0))
