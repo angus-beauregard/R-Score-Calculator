@@ -1378,7 +1378,9 @@ st.markdown(
     '<div class="glass-card"><h2 style="margin-bottom:0.2rem;">R-Score Dashboard</h2></div>',
     unsafe_allow_html=True
 )
-
+st.markdown("""
+<span style="background-color:#FACC15;color:black;padding:3px 6px;border-radius:6px;font-size:0.8em;">Premium</span>
+""", unsafe_allow_html=True)
 # ================== TABS ==================
 # Add Help/Explanation first; Settings last
 explain_tab, manual_tab, csv_tab, import_tab, tab3, tab4, tab5, tab6, settings_tab = st.tabs([
@@ -2101,3 +2103,11 @@ with tab6:
 
         # Only close toolbar div once
 
+st.markdown("""
+<hr style="margin-top:40px;opacity:0.3">
+<div style="text-align:center; color:gray; font-size:0.9em;">
+RScore Pro © 2025 • Built by Angus Beauregard<br>
+<a href="https://rscore.app/privacy" target="_blank">Privacy Policy</a> •
+<a href="https://rscore.app/terms" target="_blank">Terms of Service</a>
+</div>
+""", unsafe_allow_html=True)
