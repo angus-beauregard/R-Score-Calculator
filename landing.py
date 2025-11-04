@@ -121,14 +121,12 @@ def show_landing():
     <div class="feat-title">Pro (Mock)</div>
                 <p>OCR import<br>Autofill credits<br>Program comparisons</p>
             </a>
-
-            <div class="feat-card" style="cursor:default;">
+    <div class="feat-card" style="cursor:default;">
     <div class="feat-title">Why trust it?</div>
                 <p>Runs fully in your browser<br>No Omnivox credentials<br>Formula shown</p>
             </div>
         </div>
-
-        <div class="footer-mini">
+    <div class="footer-mini">
             RScore Pro © 2025 • Not affiliated with John Abbott College or Omnivox.
         </div>
     </div>
