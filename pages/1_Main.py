@@ -1568,6 +1568,11 @@ with csv_tab:
             df_up.loc[df_up["Credits"] == 0, "Credits"] = 1
             st.session_state.df = df_up
             st.success(f"Loaded {len(df_up)} rows from CSV.")
+
+            # NEW: make the manual editor show the fresh CSV right away
+            st.session_state["manual_editor"] = st.session_state.df.copy()
+
+            # keep your version bump
             st.session_state.manual_editor_version = st.session_state.get("manual_editor_version", 0) + 1
         except Exception as e:
             st.error(f"CSV error: {e}")
