@@ -1569,6 +1569,7 @@ with csv_tab:
             st.session_state.df = df_up
             st.success(f"Loaded {len(df_up)} rows from CSV.")
             st.session_state.manual_editor_version = st.session_state.get("manual_editor_version", 0) + 1
+            st.rerun()
         except Exception as e:
             st.error(f"CSV error: {e}")
 
@@ -2115,3 +2116,28 @@ RScore Pro © 2025<br>
 <a href="https://rscore.app/terms" target="_blank">Terms of Service</a>
 </div>
 """, unsafe_allow_html=True)
+st.markdown(
+    """
+    <hr style="margin-top:2rem;margin-bottom:1rem;">
+    <p style="font-size:0.75rem;color:#94a3b8;">
+      RScore Dashboard is independent and not affiliated with John Abbott College or Omnivox.
+    </p>
+    """,
+    unsafe_allow_html=True,
+)
+
+with st.expander("Terms of Use"):
+    st.markdown(
+        """
+        This R-Score tool is for informational/educational use only. Results are estimates based on what you enter.
+        Do not enter Omnivox credentials. No warranty is given. You must follow your college’s IT/acceptable use policies.
+        """
+    )
+
+with st.expander("Privacy Policy"):
+    st.markdown(
+        """
+        We only process the grade data you upload in this session to compute an R-score. Do not upload personal identifiers.
+        If you deploy this publicly, make sure to update this text with your hosting/logging details.
+        """
+    )
