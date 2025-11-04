@@ -4,25 +4,31 @@ st.set_page_config(page_title="RScore Landing", page_icon="📊", layout="center
 
 def show_landing():
     st.markdown("""
+    def show_landing():
+    st.markdown("""
     <style>
     body { background-color: #f9fafb; }
+
     .hero-wrap {
         max-width: 960px;
         margin: 0 auto;
         padding: 2.5rem 1.5rem 2rem 1.5rem;
         text-align: center;
     }
+
     .hero-title {
         font-size: clamp(2.3rem, 4vw, 2.8rem);
         font-weight: 700;
         color: #111827;
         letter-spacing: -0.03em;
     }
+
     .hero-sub {
         margin-top: 1rem;
         font-size: 1rem;
         color: #4b5563;
     }
+
     .hero-badges {
         margin-top: 1.2rem;
         display: flex;
@@ -30,25 +36,29 @@ def show_landing():
         justify-content: center;
         flex-wrap: wrap;
     }
+
     .hero-badge {
         background: rgba(79,70,229,0.08);
         border: 1px solid rgba(79,70,229,0.15);
         color: #1f2937;
         padding: .35rem .7rem;
-        border-radius:9999px;
-        font-size:.7rem;
+        border-radius: 9999px;
+        font-size: .7rem;
     }
 
-    /* cards row */
+    /* Fix: keep all 3 boxes in one line but centered */
     .features {
         display: flex;
         justify-content: center;
-        gap: 1.2rem;
+        align-items: stretch;
+        gap: 1.5rem;
         margin-top: 2.5rem;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
+        flex-shrink: 0;
+        overflow-x: auto;
+        padding-bottom: 1rem;
     }
 
-    /* base card, but it's an <a>, so reset link styles here */
     .feat-card {
         text-decoration: none !important;
         color: inherit !important;
@@ -65,7 +75,9 @@ def show_landing():
         flex-direction: column;
         justify-content: center;
         align-items: center;
+        flex: 0 0 auto;
     }
+
     .feat-card:hover {
         transform: scale(1.03);
         border-color: #6366F1;
@@ -77,6 +89,7 @@ def show_landing():
         font-size: 1.05rem;
         margin-bottom: .45rem;
     }
+
     .feat-card p {
         font-size: .9rem;
         line-height: 1.35;
@@ -90,10 +103,12 @@ def show_landing():
         color: #ffffff !important;
         box-shadow: 0 10px 25px rgba(99,102,241,0.25);
     }
+
     .pro-card .feat-title,
     .pro-card p {
         color: #ffffff !important;
     }
+
     .pro-card:hover {
         transform: scale(1.05);
         box-shadow: 0 15px 35px rgba(79,70,229,0.4);
@@ -101,9 +116,9 @@ def show_landing():
 
     .footer-mini {
         margin-top: 2.5rem;
-        text-align:center;
-        font-size:.75rem;
-        color:#9ca3af;
+        text-align: center;
+        font-size: .75rem;
+        color: #9ca3af;
     }
     </style>
 
