@@ -1,3 +1,4 @@
+import streamlit as st
 # ====== MOCK ACCESS / LANDING ======
 if "onboarded" not in st.session_state:
     st.session_state.onboarded = False
