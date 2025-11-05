@@ -123,8 +123,12 @@ if not st.session_state.tos_accepted:
 
             # 👇 if the account is NOT premium, we’ll send them to the payment page
             if not st.session_state.get("is_premium", False):
+                # add the checkout flag so landing shows Stripe
                 st.experimental_set_query_params(checkout="1")
-                st.switch_page(/landing)
+                # go to root landing.py
+                st.switch_page("landing.py")
+                st.stop()
+
 
             st.rerun()
         else:
