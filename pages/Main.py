@@ -1515,7 +1515,11 @@ def require_premium():
 # user is logged in and has accepted TOS at this point
 if not st.session_state.get("is_premium", False):
     # send them to the landing page in "checkout mode"
-    st.experimental_set_query_params(checkout="1")
+    # we want landing.py to open in "checkout" mode
+    qp = st.query_params
+    qp["checkout"] = "1"          # add/overwrite key
+    st.query_params = qp          # write it back
+
     st.switch_page("landing.py")
     st.stop()
 # ================== TABS ==================
