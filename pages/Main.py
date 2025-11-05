@@ -99,22 +99,24 @@ else:
     st.session_state["tos_accepted"] = False
 
 # ----- TERMS OF USE GATE -----
-if not st.session_state.get("tos_accepted", False):
+if not st.session_state["tos_accepted"]:
     st.markdown("## Terms of Use")
-    st.markdown(
-        """
-        This tool is independent and for academic planning only. Do **not** enter Omnivox credentials.
-        By continuing you agree to use it responsibly and not attempt any unauthorized access.
-        """
+    st.write(
+        "This tool is for academic planning only. Do **not** enter Omnivox credentials. "
+        "By continuing you agree to use it responsibly."
     )
 
-    agree = st.checkbox("I have read and agree to these Terms of Use.")
-    if st.button("Agree and enter"):
+    # use a form so the button + checkbox submit together
+    with st.form("tos_form"):
+        agree = st.checkbox("I have read and agree to these Terms of Use.")
+        submitted = st.form_submit_button("Agree and enter")
+
+    if submitted:
         if agree:
-            # 1) mark it in session
+            # 1) save in session
             st.session_state["tos_accepted"] = True
 
-            # 2) optionally persist to Supabase (you already had this)
+            # 2) OPTIONAL: persist to Supabase if you have user_id etc.
             try:
                 requests.patch(
                     f"{profiles_url}?id=eq.{user_id}",
@@ -122,14 +124,13 @@ if not st.session_state.get("tos_accepted", False):
                     json={"tos_accepted": True},
                 )
             except Exception:
-                # fail-soft
                 pass
 
-            # 3) IMPORTANT: rerun the page so we exit this block right away
+            # 3) reload THIS page so we skip this gate on the next run
             st.rerun()
         else:
             st.warning("Please check the box to agree.")
-    # user hasn't agreed yet → stop here
+    # user hasn't successfully agreed yet → stop here
     st.stop()
 
 
