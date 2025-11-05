@@ -81,25 +81,51 @@ headers_authed = {
 }
 params = {
     "id": f"eq.{user_id}",
-    "select": "id,is_premium",
+    # 👇 pull tos_accepted too
+    "select": "id,is_premium,tos_accepted",
 }
 resp = requests.get(profiles_url, headers=headers_authed, params=params)
 rows = resp.json() if resp.ok else []
 
 if rows:
-    st.session_state["is_premium"] = bool(rows[0].get("is_premium", False))
+    prof = rows[0]
+    st.session_state["is_premium"] = bool(prof.get("is_premium", False))
+    # 👇 persist into session so we don’t ask again
+    st.session_state["tos_accepted"] = bool(prof.get("tos_accepted", False))
 else:
-    # user exists in auth but not in profiles — treat as free
     st.session_state["is_premium"] = False
-if "tos_accepted" not in st.session_state:
-    st.session_state.tos_accepted = False
+    st.session_state["tos_accepted"] = False
 
 if not st.session_state.tos_accepted:
-    # ... your TOS markdown ...
+    st.markdown("## Terms of Use")
+    # you can paste the long text from the other TOS block here
+    st.markdown(
+        """
+        This tool is independent and for academic planning only. Do **not** enter Omnivox credentials.
+        By continuing you agree to use it responsibly and not attempt any unauthorized access.
+        """
+    )
+
     agree = st.checkbox("I have read and agree to these Terms of Use.")
     if st.button("Agree and enter"):
         if agree:
             st.session_state.tos_accepted = True
+            # 👇 write it back to Supabase so future logins remember it
+            try:
+                requests.patch(
+                    f"{profiles_url}?id=eq.{user_id}",
+                    headers={**headers_authed, "Content-Type": "application/json"},
+                    json={"tos_accepted": True},
+                )
+            except Exception:
+                # fail-soft: still let them in
+                pass
+
+            # 👇 if the account is NOT premium, we’ll send them to the payment page
+            if not st.session_state.get("is_premium", False):
+                st.experimental_set_query_params(checkout="1")
+                st.switch_page("landing.py")
+
             st.rerun()
         else:
             st.warning("Please check the box to agree.")
@@ -1207,54 +1233,6 @@ div[data-testid="stToolbar"] {
 }
 </style>
 """, unsafe_allow_html=True)
-# ================== TERMS OF USE GATE ==================
-if "tos_accepted" not in st.session_state:
-    st.session_state.tos_accepted = False
-
-if not st.session_state.tos_accepted:
-    st.markdown("## Terms of Use")
-    st.markdown(
-        """
-        This R‑Score tool is **independent** and **not affiliated with John Abbott College** (JAC), Omnivox, or My JAC Portal. It is for **informational/educational** use only and **does not guarantee admission** decisions. Do **not** enter any Omnivox credentials here.
-
-        By continuing you agree to:
-        - Use this site responsibly and in accordance with the JAC **College Policy on appropriate use of computing resources**.
-        - Not attempt unauthorized access, phishing, scraping, or any activity prohibited by JAC policies or law.
-        - Accept that results are estimates based on inputs you provide; no warranty is given.
-
-        Reference: JAC policies are available at <https://johnabbott.omnivox.ca/intr/Module/Information/Conditions.aspx>. Relevant Omnivox terms include (non‑exhaustive): password confidentiality, prohibition on unauthorized access, and restrictions on reproducing content or disrupting services.
-        """
-    )
-    with st.expander("Reference: Omnivox terms (excerpts)"):
-        st.markdown(
-            """
-            - Treat your Omnivox password like your bank PIN; do not share or store it.
-            - Unauthorized access (using someone else’s identifier/password, attempting to obtain a password) is forbidden.
-            - Reproducing content from Omnivox for illegitimate ends (e.g., phishing), distributing malware, or disrupting services is forbidden.
-            - Collecting/storing personal data of other users is forbidden.
-            - Infractions may result in severe sanctions, including expulsion and civil/criminal recourse.
-            - Links to third‑party sites are provided for convenience; Omnivox has no control over those sites.
-            - Do not infringe third‑party intellectual property when uploading content.
-            - Zoom classes are hosted on an external platform; consult Zoom’s own terms.
-            """
-        )
-    agree = st.checkbox("I have read and agree to these Terms of Use.")
-    colA, colB = st.columns([1,1])
-    with colA:
-        if st.button("Agree and enter"):
-            if agree:
-                st.session_state.tos_accepted = True
-                try:
-                    st.rerun()
-                except Exception:
-                    st.experimental_rerun()
-            else:
-                st.warning("Please check the box to agree before continuing.")
-    with colB:
-        st.caption("If you do not agree, close this tab or window.")
-    st.stop()
-
-
 # ================== CONSTANTS ==================
 REQUIRED_COLS = ["Course Name", "Your Grade", "Class Avg", "Std. Dev", "Credits"]
 ALL_COLS = REQUIRED_COLS
@@ -1529,6 +1507,13 @@ def require_premium():
         st.markdown("### 🔒 Premium feature")
         st.write("You unlocked only the free tools. To use this section, click **Unlock Pro (mock)** on the landing page.")
         st.stop()
+
+# user is logged in and has accepted TOS at this point
+if not st.session_state.get("is_premium", False):
+    # send them to the landing page in "checkout mode"
+    st.experimental_set_query_params(checkout="1")
+    st.switch_page("landing.py")
+    st.stop()
 # ================== TABS ==================
 # Add Help/Explanation first; Settings last
 explain_tab, manual_tab, csv_tab, import_tab, tab3, tab4, tab5, tab6, settings_tab = st.tabs([
@@ -1644,7 +1629,11 @@ with manual_tab:
         st.rerun()
 # ---------- CSV TAB ----------
 with import_tab:
-    require_premium()
+    if not st.session_state.get("is_premium", False):
+        require_premium()
+    else:
+        st.markdown("### 📸 Import from Omnivox screenshots")
+        pass
 with csv_tab:
     st.write("Upload a CSV. We'll try to auto-detect columns.")
 
@@ -1974,9 +1963,8 @@ with tab3:
 
 
 # ---------- TAB 4 (Importance) ----------
-with import_tab:
-    require_premium()
 with tab4:
+    require_premium()
     st.markdown(
     "**What does 'Importance' mean?** It estimates how much your overall R-score reacts to improving a specific course. "
     "We approximate it as **(5 ÷ Std. Dev) × (Course Credits ÷ Total Credits)**. "
@@ -2017,9 +2005,8 @@ with tab4:
         st.plotly_chart(fig, use_container_width=True)
 
 # ---------- TAB 5 (Biggest gains) ----------
-with import_tab:
-    require_premium()
 with tab5:
+    require_premium()
     st.subheader("🏆 Biggest Potential R-Score Gains")
 
     if "df" not in st.session_state or st.session_state.df is None:
@@ -2147,9 +2134,8 @@ with tab5:
             st.markdown('</div>', unsafe_allow_html=True)
 
 # ---------- TAB 6 (Programs) ----------
-with import_tab:
-    require_premium()
 with tab6:
+    require_premium()
     st.markdown('<div class="glass-toolbar">', unsafe_allow_html=True)
     uni_df = load_uni_csv()
 
