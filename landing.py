@@ -6,20 +6,14 @@ def show_landing():
     st.markdown(
         """
         <style>
-        /* hide top right menu and top header */
         #MainMenu {visibility: hidden;}
         header {visibility: hidden;}
-
-        /* hide footer (multiple selectors to catch versions) */
         footer {visibility: hidden;}
         footer div {visibility: hidden;}
         div[data-testid="stFooter"] {display: none !important;}
         section[data-testid="stFooter"] {display: none !important;}
-
-        /* hide sidebar entirely */
         div[data-testid="stSidebar"] {display: none !important;}
 
-        /* widen main container */
         .block-container {
             padding-top: 1rem;
             max-width: 1100px;
@@ -30,27 +24,23 @@ def show_landing():
             padding: 0;
             overflow-x: hidden;
         }
-
         .hero-wrap {
             max-width: 960px;
             margin: 0 auto;
             padding: 2.5rem 1.5rem 2rem 1.5rem;
             text-align: center;
         }
-
         .hero-title {
             font-size: clamp(2.3rem, 4vw, 2.8rem);
             font-weight: 700;
             color: #111827;
             letter-spacing: -0.03em;
         }
-
         .hero-sub {
             margin-top: 1rem;
             font-size: 1rem;
             color: #4b5563;
         }
-
         .hero-badges {
             margin-top: 1.2rem;
             display: flex;
@@ -58,7 +48,6 @@ def show_landing():
             justify-content: center;
             flex-wrap: wrap;
         }
-
         .hero-badge {
             background: rgba(79,70,229,0.08);
             border: 1px solid rgba(79,70,229,0.15);
@@ -67,7 +56,6 @@ def show_landing():
             border-radius: 9999px;
             font-size: .7rem;
         }
-
         .features {
             display: flex;
             justify-content: center;
@@ -76,7 +64,6 @@ def show_landing():
             margin-top: 2.5rem;
             flex-wrap: wrap;
         }
-
         .feat-card {
             text-decoration: none !important;
             color: inherit !important;
@@ -94,50 +81,36 @@ def show_landing():
             justify-content: center;
             align-items: center;
         }
-
         .feat-card:hover {
             transform: scale(1.03);
             border-color: #6366F1;
             box-shadow: 0 10px 25px rgba(99,102,241,0.15);
         }
-
         .feat-title {
             font-weight: 700;
             font-size: 1.05rem;
             margin-bottom: .45rem;
         }
-
-        .feat-card p {
-            font-size: .9rem;
-            line-height: 1.35;
-            margin: 0;
-        }
-
         .pro-card {
             background: linear-gradient(135deg, #4F46E5 0%, #6366F1 100%);
             border: none;
             color: #ffffff !important;
             box-shadow: 0 10px 25px rgba(99,102,241,0.25);
         }
-
         .pro-card .feat-title,
         .pro-card p {
             color: #ffffff !important;
         }
-
         .pro-card:hover {
             transform: scale(1.05);
             box-shadow: 0 15px 35px rgba(79,70,229,0.4);
         }
-
         .footer-mini {
             margin-top: 2.5rem;
             text-align: center;
             font-size: .75rem;
             color: #9ca3af;
         }
-
-        [data-testid="stSidebar"] { display: none; }
         .block-container {
             padding-top: 1rem;
             padding-left: 3rem;
@@ -185,7 +158,6 @@ def show_landing():
         """,
         unsafe_allow_html=True,
     )
-
 def show_checkout():
     st.title("Upgrade to RScore Pro")
     st.write("You're signed in but your account is not premium yet.")
@@ -196,8 +168,12 @@ def show_checkout():
     else:
         st.warning("Add STRIPE_CHECKOUT_URL to your Streamlit secrets to enable payments.")
 
-# decide what to show
-qp = st.query_params
+# --- read query params safely on any version ---
+try:
+    qp = st.query_params
+except AttributeError:
+    qp = st.experimental_get_query_params()
+
 if "checkout" in qp:
     show_checkout()
 else:
