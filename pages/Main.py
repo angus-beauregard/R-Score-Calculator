@@ -124,7 +124,7 @@ if not st.session_state.tos_accepted:
             # 👇 if the account is NOT premium, we’ll send them to the payment page
             if not st.session_state.get("is_premium", False):
                 st.experimental_set_query_params(checkout="1")
-                st.switch_page("landing.py")
+                st.switch_page(landing)
 
             st.rerun()
         else:
@@ -1512,7 +1512,7 @@ def require_premium():
 if not st.session_state.get("is_premium", False):
     # send them to the landing page in "checkout mode"
     st.experimental_set_query_params(checkout="1")
-    st.switch_page("landing.py")
+    st.switch_page(landing)
     st.stop()
 # ================== TABS ==================
 # Add Help/Explanation first; Settings last
