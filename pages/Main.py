@@ -132,6 +132,13 @@ if not st.session_state["tos_accepted"]:
             st.warning("Please check the box to agree.")
     # user hasn't successfully agreed yet → stop here
     st.stop()
+# ---------- PREMIUM CHECK (runs only after TOS is done) ----------
+if not st.session_state.get("is_premium", False):
+    qp = st.query_params
+    qp["checkout"] = "1"
+    st.query_params = qp
+    st.switch_page("landing.py")
+    st.stop()
 
 
 
