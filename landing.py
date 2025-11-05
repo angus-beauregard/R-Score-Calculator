@@ -2,6 +2,11 @@ import streamlit as st
 
 st.set_page_config(page_title="RScore Landing", page_icon="📊", layout="centered")
 
+qp = st.query_params
+if "checkout" in qp:
+    show_checkout()
+else:
+    show_landing()
 def show_landing():
     st.markdown(
         """
@@ -203,10 +208,3 @@ def show_checkout():
         st.link_button("Pay securely with Stripe", checkout_url)
     else:
         st.warning("Add STRIPE_CHECKOUT_URL to your Streamlit secrets to enable payments.")
-
-
-qp = st.query_params
-if "checkout" in qp:
-    show_checkout()
-else:
-    show_landing()
