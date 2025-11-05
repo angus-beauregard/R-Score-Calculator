@@ -98,48 +98,27 @@ else:
     st.session_state["is_premium"] = False
     st.session_state["tos_accepted"] = False
 
-# ----- TERMS OF USE GATE -----
-if not st.session_state["tos_accepted"]:
-    st.markdown("## Terms of Use")
-    st.write(
-        "This tool is for academic planning only. Do **not** enter Omnivox credentials. "
-        "By continuing you agree to use it responsibly."
-    )
+# In your Main.py file:
 
-    # use a form so the button + checkbox submit together
-    with st.form("tos_form"):
-        agree = st.checkbox("I have read and agree to these Terms of Use.")
-        submitted = st.form_submit_button("Agree and enter")
+def show_tos():
+    st.title("Terms of Service")
+    st.markdown("Please read and accept the Terms of Service to continue.")
+    # Add your full TOS content here...
 
-    if submitted:
-        if agree:
-            # 1) save in session
+    # Checkbox to accept
+    accepted = st.checkbox("I agree to the Terms of Service")
+
+    if st.button("Continue"):
+        if accepted:
+            # 1. Set the session state to indicate acceptance
             st.session_state["tos_accepted"] = True
-
-            # 2) OPTIONAL: persist to Supabase if you have user_id etc.
-            try:
-                requests.patch(
-                    f"{profiles_url}?id=eq.{user_id}",
-                    headers={**headers_authed, "Content-Type": "application/json"},
-                    json={"tos_accepted": True},
-                )
-            except Exception:
-                pass
-
-            # 3) reload THIS page so we skip this gate on the next run
-            st.rerun()
+            
+            # 2. ✅ FIX: Force the app to re-run from the top.
+            # This makes the app check the new st.session_state["tos_accepted"] value
+            # and render your main content instead of the TOS screen.
+            st.rerun() 
         else:
-            st.warning("Please check the box to agree.")
-    # user hasn't successfully agreed yet → stop here
-    st.stop()
-# ---------- PREMIUM CHECK (runs only after TOS is done) ----------
-if not st.session_state.get("is_premium", False):
-    qp = st.query_params
-    qp["checkout"] = "1"
-    st.query_params = qp
-    st.switch_page("landing.py")
-    st.stop()
-
+            st.error("You must accept the terms to continue.")
 
 
 def require_premium():
