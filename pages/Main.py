@@ -126,7 +126,7 @@ if not st.session_state.tos_accepted:
                 # add the checkout flag so landing shows Stripe
                 st.experimental_set_query_params(checkout="1")
                 # go to root landing.py
-                st.switch_page("landing.py")
+                st.switch_page("landing")
                 st.stop()
 
 
