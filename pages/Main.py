@@ -89,15 +89,15 @@ params = {
 resp = requests.get(profiles_url, headers=headers_authed, params=params)
 rows = resp.json() if resp.ok else []
 
-if rows:
-    prof = rows[0]
-    st.session_state["is_premium"] = bool(prof.get("is_premium", False))
-    # 👇 persist into session so we don’t ask again
-    st.session_state["tos_accepted"] = bool(prof.get("tos_accepted", False))
-else:
-    st.session_state["is_premium"] = False
-    st.session_state["tos_accepted"] = False
-
+if "session_id" in qp:
+    # 1. Force a refresh of the user profile from Supabase
+    # This assumes your Supabase webhook has already set 'is_premium' to True.
+    fetch_user_profile() 
+    
+    # 2. Clean the URL and rerun the app
+    # This forces the app to hit the Premium Check with the *new* True status
+    st.query_params.clear()
+    st.rerun()
 # In your Main.py file:
 
 def show_tos():
