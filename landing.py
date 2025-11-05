@@ -192,3 +192,21 @@ def show_landing():
     """, unsafe_allow_html=True)
 
 show_landing()
+def show_checkout():
+    st.title("Upgrade to RScore Pro")
+    st.write("You're signed in but your account is not premium yet.")
+
+    # put your real Stripe Checkout URL in Streamlit secrets
+    checkout_url = st.secrets.get("STRIPE_CHECKOUT_URL")
+
+    if checkout_url:
+        st.link_button("Pay securely with Stripe", checkout_url)
+    else:
+        st.warning("Add STRIPE_CHECKOUT_URL to your Streamlit secrets to enable payments.")
+
+
+qp = st.query_params
+if "checkout" in qp:
+    show_checkout()
+else:
+    show_landing()
