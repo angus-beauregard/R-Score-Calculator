@@ -29,6 +29,8 @@ AUTH_HEADERS = {
     "apikey": SUPABASE_KEY,
     "Content-Type": "application/json",
 }
+if "tos_accepted" not in st.session_state:
+    st.session_state["tos_accepted"] = False
 
 def show_login():
     st.title("Sign in to RScoreCalc")
