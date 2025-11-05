@@ -2,11 +2,6 @@ import streamlit as st
 
 st.set_page_config(page_title="RScore Landing", page_icon="📊", layout="centered")
 
-qp = st.query_params
-if "checkout" in qp:
-    show_checkout()
-else:
-    show_landing()
 def show_landing():
     st.markdown(
         """
@@ -18,7 +13,6 @@ def show_landing():
         /* hide footer (multiple selectors to catch versions) */
         footer {visibility: hidden;}
         footer div {visibility: hidden;}
-        /* newer Streamlit footer containers */
         div[data-testid="stFooter"] {display: none !important;}
         section[data-testid="stFooter"] {display: none !important;}
 
@@ -34,7 +28,7 @@ def show_landing():
             background-color: #f9fafb;
             margin: 0;
             padding: 0;
-            overflow-x: hidden; /* ✅ removes side scroll globally */
+            overflow-x: hidden;
         }
 
         .hero-wrap {
@@ -74,14 +68,13 @@ def show_landing():
             font-size: .7rem;
         }
 
-        /* 3 boxes centered perfectly without scrolling */
         .features {
             display: flex;
             justify-content: center;
             align-items: stretch;
             gap: 1.5rem;
             margin-top: 2.5rem;
-            flex-wrap: wrap; /* ✅ allows neat wrapping instead of scroll */
+            flex-wrap: wrap;
         }
 
         .feat-card {
@@ -120,7 +113,6 @@ def show_landing():
             margin: 0;
         }
 
-        /* PRO card stands out */
         .pro-card {
             background: linear-gradient(135deg, #4F46E5 0%, #6366F1 100%);
             border: none;
@@ -144,12 +136,8 @@ def show_landing():
             font-size: .75rem;
             color: #9ca3af;
         }
-        
-        header {visibility: hidden;}
-        footer {visibility: hidden;}
-        [data-testid="stSidebar"] {
-            display: none;
-        }
+
+        [data-testid="stSidebar"] { display: none; }
         .block-container {
             padding-top: 1rem;
             padding-left: 3rem;
@@ -158,53 +146,61 @@ def show_landing():
         }
         </style>
 
-    <div class="hero-wrap">
-        <div style="display:flex;justify-content:center;margin-bottom:1rem;">
-            <div style="background:rgba(99,102,241,.12);padding:.35rem .75rem;border-radius:9999px;font-size:.7rem;color:#4f46e5;">
-                RScore Pro • Quebec CEGEP R-score helper
+        <div class="hero-wrap">
+            <div style="display:flex;justify-content:center;margin-bottom:1rem;">
+                <div style="background:rgba(99,102,241,.12);padding:.35rem .75rem;border-radius:9999px;font-size:.7rem;color:#4f46e5;">
+                    RScore Pro • Quebec CEGEP R-score helper
+                </div>
+            </div>
+
+            <div class="hero-title">Your R-Score, in detail.</div>
+            <div class="hero-sub">
+                Import Omnivox screenshots, autofill credits, see potential university admissions, and track scenarios.<br>
+                Manual entry stays free.
+            </div>
+
+            <div class="hero-badges">
+                <div class="hero-badge">✓ No Omnivox password stored</div>
+                <div class="hero-badge">✓ Uses standard 35 + 5 × Z</div>
+                <div class="hero-badge">✓ Built for JAC students</div>
+            </div>
+
+            <div class="features">
+                <a href="/Free" target="_self" class="feat-card">
+                    <div class="feat-title">Free Tools</div>
+                    <p>Limited Features<br>Manual entry<br>Barebounds R-score</p>
+                </a>
+                <a href="/Main" target="_self" class="feat-card pro-card">
+                    <div class="feat-title">Pro</div>
+                    <p>OCR import<br>Autofill credits<br>Program comparisons</p>
+                </a>
+                <div class="feat-card" style="cursor:default;">
+                    <div class="feat-title">Why trust it?</div>
+                    <p>Runs fully in your browser<br>No Omnivox credentials<br>Formula shown</p>
+                </div>
+            </div>
+
+            <div class="footer-mini">
+                RScore Pro © 2025 • Not affiliated with John Abbott College or Omnivox.
             </div>
         </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
-    <div class="hero-title">Your R-Score, in detail.</div>
-        <div class="hero-sub">
-            Import Omnivox screenshots, autofill credits, see potential university admissions, and track scenarios.<br>
-            Manual entry stays free.
-        </div>
-    <div class="hero-badges">
-            <div class="hero-badge">✓ No Omnivox password stored</div>
-            <div class="hero-badge">✓ Uses standard 35 + 5 × Z</div>
-            <div class="hero-badge">✓ Built for JAC students</div>
-        </div>
-
-    <div class="features">
-            <a href="/Free" target="_self" class="feat-card">
-    <div class="feat-title">Free Tools</div>
-                <p>Limited Features<br>Manual entry<br>Barebounds R-score</p>
-            </a>
-            <a href="/Main" target="_self" class="feat-card pro-card">
-    <div class="feat-title">Pro</div>
-                <p>OCR import<br>Autofill credits<br>Program comparisons</p>
-            </a>
-    <div class="feat-card" style="cursor:default;">
-    <div class="feat-title">Why trust it?</div>
-                <p>Runs fully in your browser<br>No Omnivox credentials<br>Formula shown</p>
-    </div>
-    </div>
-    <div class="footer-mini">
-            RScore Pro © 2025 • Not affiliated with John Abbott College or Omnivox.
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-show_landing()
 def show_checkout():
     st.title("Upgrade to RScore Pro")
     st.write("You're signed in but your account is not premium yet.")
 
-    # put your real Stripe Checkout URL in Streamlit secrets
     checkout_url = st.secrets.get("STRIPE_CHECKOUT_URL")
-
     if checkout_url:
         st.link_button("Pay securely with Stripe", checkout_url)
     else:
         st.warning("Add STRIPE_CHECKOUT_URL to your Streamlit secrets to enable payments.")
+
+# decide what to show
+qp = st.query_params
+if "checkout" in qp:
+    show_checkout()
+else:
+    show_landing()
