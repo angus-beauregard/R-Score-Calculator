@@ -96,9 +96,8 @@ else:
     st.session_state["is_premium"] = False
     st.session_state["tos_accepted"] = False
 
-if not st.session_state.tos_accepted:
+if not st.session_state.get("tos_accepted", False):
     st.markdown("## Terms of Use")
-    # you can paste the long text from the other TOS block here
     st.markdown(
         """
         This tool is independent and for academic planning only. Do **not** enter Omnivox credentials.
@@ -109,8 +108,10 @@ if not st.session_state.tos_accepted:
     agree = st.checkbox("I have read and agree to these Terms of Use.")
     if st.button("Agree and enter"):
         if agree:
-            st.session_state.tos_accepted = True
-            # 👇 write it back to Supabase so future logins remember it
+            # mark in session
+            st.session_state["tos_accepted"] = True
+
+            # also persist to Supabase (same as you had)
             try:
                 requests.patch(
                     f"{profiles_url}?id=eq.{user_id}",
@@ -118,21 +119,14 @@ if not st.session_state.tos_accepted:
                     json={"tos_accepted": True},
                 )
             except Exception:
-                # fail-soft: still let them in
                 pass
 
-            # 👇 if the account is NOT premium, we’ll send them to the payment page
-            if not st.session_state.get("is_premium", False):
-                # add the checkout flag so landing shows Stripe
-                qp = st.query_params        # get current params
-                qp["checkout"] = "1"        # add/overwrite
-                st.query_params = qp        # write back
-
-                st.switch_page("landing.py")
-                st.stop()
-            else:
-                st.warning("Please check the box to agree.")
+            # IMPORTANT: just reload THIS page, don't redirect yet
+            st.rerun()
+        else:
+            st.warning("Please check the box to agree.")
     st.stop()
+
 
 def require_premium():
     if not st.session_state.get("is_premium", False):
