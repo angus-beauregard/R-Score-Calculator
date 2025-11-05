@@ -96,6 +96,7 @@ else:
     st.session_state["is_premium"] = False
     st.session_state["tos_accepted"] = False
 
+# ----- TERMS OF USE GATE -----
 if not st.session_state.get("tos_accepted", False):
     st.markdown("## Terms of Use")
     st.markdown(
@@ -108,10 +109,10 @@ if not st.session_state.get("tos_accepted", False):
     agree = st.checkbox("I have read and agree to these Terms of Use.")
     if st.button("Agree and enter"):
         if agree:
-            # mark in session
+            # 1) mark it in session
             st.session_state["tos_accepted"] = True
 
-            # also persist to Supabase (same as you had)
+            # 2) optionally persist to Supabase (you already had this)
             try:
                 requests.patch(
                     f"{profiles_url}?id=eq.{user_id}",
@@ -119,13 +120,16 @@ if not st.session_state.get("tos_accepted", False):
                     json={"tos_accepted": True},
                 )
             except Exception:
+                # fail-soft
                 pass
 
-            # IMPORTANT: just reload THIS page, don't redirect yet
+            # 3) IMPORTANT: rerun the page so we exit this block right away
             st.rerun()
         else:
             st.warning("Please check the box to agree.")
+    # user hasn't agreed yet → stop here
     st.stop()
+
 
 
 def require_premium():
