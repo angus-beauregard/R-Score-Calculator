@@ -130,11 +130,8 @@ if not st.session_state.tos_accepted:
 
                 st.switch_page("landing.py")
                 st.stop()
-
-
-            st.rerun()
-        else:
-            st.warning("Please check the box to agree.")
+            else:
+                st.warning("Please check the box to agree.")
     st.stop()
 
 def require_premium():
