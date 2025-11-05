@@ -160,19 +160,19 @@ def show_landing():
     )
 def show_checkout():
     st.title("Upgrade to RScore Pro")
-    st.write("You're signed in but your account is not premium yet.")
+    st.write("You are signed in, but this account is not premium yet.")
 
     checkout_url = st.secrets.get("STRIPE_CHECKOUT_URL")
     if checkout_url:
-        st.link_button("Pay securely with Stripe", checkout_url)
+        st.link_button("Pay with Stripe", checkout_url)
     else:
-        st.warning("Add STRIPE_CHECKOUT_URL to your Streamlit secrets to enable payments.")
+        st.warning("Add STRIPE_CHECKOUT_URL to Streamlit secrets to enable payment.")
 
 # --- read query params safely on any version ---
 try:
-    qp = st.query_params
+    qp = st.query_params  # newer
 except AttributeError:
-    qp = st.experimental_get_query_params()
+    qp = st.experimental_get_query_params()  # older
 
 if "checkout" in qp:
     show_checkout()
