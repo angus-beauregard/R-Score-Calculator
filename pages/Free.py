@@ -12,7 +12,7 @@ if "upgrade" in qp:
     st.session_state.is_premium = True
     st.session_state.onboarded = True
     # adjust this to the real main/pro app filename
-    st.switch_page("app.py")
+    st.switch_page(Main)
 
 # ---------- BASE STYLES ----------
 st.markdown(
