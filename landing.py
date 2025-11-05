@@ -145,45 +145,43 @@ def show_landing():
             max-width: 100%;
         }
         </style>
-
-        <div class="hero-wrap">
-            <div style="display:flex;justify-content:center;margin-bottom:1rem;">
-                <div style="background:rgba(99,102,241,.12);padding:.35rem .75rem;border-radius:9999px;font-size:.7rem;color:#4f46e5;">
+<div class="hero-wrap">
+    <div style="display:flex;justify-content:center;margin-bottom:1rem;">
+    <div style="background:rgba(99,102,241,.12);padding:.35rem .75rem;border-radius:9999px;font-size:.7rem;color:#4f46e5;">
                     RScore Pro • Quebec CEGEP R-score helper
-                </div>
-            </div>
+    </div>
+    </div>
 
-            <div class="hero-title">Your R-Score, in detail.</div>
-            <div class="hero-sub">
+<div class="hero-title">Your R-Score, in detail.</div>
+<div class="hero-sub">
                 Import Omnivox screenshots, autofill credits, see potential university admissions, and track scenarios.<br>
                 Manual entry stays free.
-            </div>
+</div>
 
-            <div class="hero-badges">
-                <div class="hero-badge">✓ No Omnivox password stored</div>
-                <div class="hero-badge">✓ Uses standard 35 + 5 × Z</div>
-                <div class="hero-badge">✓ Built for JAC students</div>
-            </div>
-
-            <div class="features">
-                <a href="/Free" target="_self" class="feat-card">
-                    <div class="feat-title">Free Tools</div>
-                    <p>Limited Features<br>Manual entry<br>Barebounds R-score</p>
-                </a>
-                <a href="/Main" target="_self" class="feat-card pro-card">
-                    <div class="feat-title">Pro</div>
+<div class="hero-badges">
+<div class="hero-badge">✓ No Omnivox password stored</div>
+<div class="hero-badge">✓ Uses standard 35 + 5 × Z</div>
+<div class="hero-badge">✓ Built for JAC students</div>
+</div>
+<div class="features">
+    <a href="/Free" target="_self" class="feat-card">
+<div class="feat-title">Free Tools</div>
+    <p>Limited Features<br>Manual entry<br>Barebounds R-score</p>
+    </a>
+    <a href="/Main" target="_self" class="feat-card pro-card">
+<div class="feat-title">Pro</div>
                     <p>OCR import<br>Autofill credits<br>Program comparisons</p>
                 </a>
-                <div class="feat-card" style="cursor:default;">
-                    <div class="feat-title">Why trust it?</div>
+<div class="feat-card" style="cursor:default;">
+<div class="feat-title">Why trust it?</div>
                     <p>Runs fully in your browser<br>No Omnivox credentials<br>Formula shown</p>
-                </div>
-            </div>
+</div>
+</div>
 
-            <div class="footer-mini">
+<div class="footer-mini">
                 RScore Pro © 2025 • Not affiliated with John Abbott College or Omnivox.
-            </div>
-        </div>
+</div>
+</div>
         """,
         unsafe_allow_html=True,
     )
