@@ -14,7 +14,7 @@ import plotly.express as px
 # basic page config
 # -------------------------------------------------
 st.set_page_config(page_title="R-Score Dashboard", layout="wide")
-
+qp = st.query_params
 # -------------------------------------------------
 # Supabase creds from Streamlit secrets
 # -------------------------------------------------
@@ -89,15 +89,13 @@ params = {
 resp = requests.get(profiles_url, headers=headers_authed, params=params)
 rows = resp.json() if resp.ok else []
 
+# ✅ handle Stripe return (?session_id=...)
 if "session_id" in qp:
-    # 1. Force a refresh of the user profile from Supabase
-    # This assumes your Supabase webhook has already set 'is_premium' to True.
-    fetch_user_profile() 
-    
-    # 2. Clean the URL and rerun the app
-    # This forces the app to hit the Premium Check with the *new* True status
+    # OPTIONAL: re-fetch profile from Supabase here, if you have that function
+    # e.g. refresh_user_profile()
     st.query_params.clear()
     st.rerun()
+
 # In your Main.py file:
 
 def show_tos():
